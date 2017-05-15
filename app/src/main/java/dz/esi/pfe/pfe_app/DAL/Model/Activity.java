@@ -8,6 +8,51 @@ public class Activity {
     String codeActivity;
     String activityLabel;
 
+    public Activity(int code){
+        codeActivity=""+code;
+
+        switch (code){
+            case 1:
+                activityLabel="Debout";
+                break;
+            case 2:
+                activityLabel="Assis";
+                break;
+            case 3:
+                activityLabel="Allongé";
+                break;
+            case 4:
+                activityLabel="Marche";
+                break;
+            case 5:
+                activityLabel="Monte les escaliers";
+                break;
+            case 6:
+                activityLabel="Penché en avant";
+                break;
+            case 7:
+                activityLabel="Main en l'air";
+                break;
+            case 8:
+                activityLabel="Genou plié";
+                break;
+            case 9:
+                activityLabel="A vélo";
+                break;
+            case 10:
+                activityLabel="Footing";
+                break;
+            case 11:
+                activityLabel="Course";
+                break;
+            case 12:
+                activityLabel="Saut avant-arrière";
+                break;
+            default:
+                activityLabel="Unrecognized";
+                break;
+        }
+    }
     public Activity(String codeActivity, String activityLabel) {
         this.codeActivity = codeActivity;
         this.activityLabel = activityLabel;

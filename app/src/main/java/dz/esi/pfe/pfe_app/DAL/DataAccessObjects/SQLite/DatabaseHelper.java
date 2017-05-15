@@ -2,8 +2,18 @@ package dz.esi.pfe.pfe_app.DAL.DataAccessObjects.SQLite;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import dz.esi.pfe.pfe_app.DAL.Model.Account;
 import dz.esi.pfe.pfe_app.DAL.Model.Activity;
@@ -244,7 +254,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values=new ContentValues();
         values.put(ID,md.getId());
         values.put(VALUE, md.getValue());
-        values.put(TIMESTAMP,md.getTimestamp().toString());
+        values.put(TIMESTAMP, md.getTimestamp().toString());
         values.put(CODESENS, md.getCodeSens());
         values.put(USERID, md.getUserID());
 
@@ -261,7 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(WEIGHT, f.getWeight());
         values.put(HEIGHT, f.getHeight());
         values.put(WAIST,f.getWaist());
-        values.put(USERID,f.getUserID());
+        values.put(USERID, f.getUserID());
 
         long row_id= db.insert(TABLE_FITNESSMEASURE,null,values);
         return row_id;
@@ -269,9 +279,183 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //////   //////////    READ //////////// ///////////////////////////
 
+    /**
+     * Get list of Activities from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<HashMap<String, String>> getAllActivities() {
+        ArrayList<HashMap<String, String>> wordList;
+        wordList = new ArrayList<HashMap<String, String>>();
+        String selectQuery = "SELECT  * FROM activity";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("CodeActivity", cursor.getString(0));
+                map.put("ActivityLabel", cursor.getString(1));
+                wordList.add(map);
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of Connexions from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<Connexion> getAllConnexions() {
+        ArrayList<Connexion> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM connexion";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new Connexion(cursor.getInt(0), Date.valueOf(cursor.getString(1)),
+                Date.valueOf(cursor.getString(2)),
+                cursor.getInt(3), cursor.getString(5), cursor.getString(4)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
 
     /////   ///////////     UPDATE //////////// ////////////////////////
+    /**
+     * Inserts Activity into SQLite DB
+     * @param queryValues
+     */
+    public void insertActivity(Activity queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("CodeActivity", queryValues.getCodeActivity());
+        values.put("ActivityLabel",queryValues.getActivityLabel());
+        database.insert("activity", null, values);
+        database.close();
+    }
+
+    /**
+     * Inserts Connexion into SQLite DB
+     * @param queryValues
+     */
+    public void insertConnexion(Connexion queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(IDCONNEX, queryValues.getId());
+        values.put(STARTCONNEX,queryValues.getstartConnex().toString());
+        values.put(FINISHCONNEX,queryValues.getfinishConnex().toString());
+        values.put(FREQUENCY,queryValues.getFrequency());
+        values.put(CODESENS,queryValues.getCodeSens());
+        values.put(USERID,queryValues.getUserID());
+        database.insert("connexion", null, values);
+        database.close();
+    }
+
+    /**
+     * Inserts Account into SQLite DB
+     * @param queryValues
+     */
+    public void insertAccount(Account queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(USERID, queryValues.getUserID());
+        values.put(EMAIL,queryValues.getEmail());
+        values.put(PASSWORD,queryValues.getPassword_hash());
+        database.insert("account", null, values);
+        database.close();
+    }
+
+    /**
+     * Inserts User into SQLite DB
+     * @param queryValues
+     */
+    public void insertUser(User queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(BIRTHDAY,queryValues.getBirthday().toString());
+        values.put(BLOODGROUP,queryValues.getBloodGroup().toString());
+        values.put(GENDER,queryValues.getGender().toString());
+        values.put(NAME,queryValues.getName());
+        values.put(USERID,queryValues.getUserID());
+        database.insert("user", null, values);
+        database.close();
+    }
+
+    /**
+     * Inserts Connexion into SQLite DB
+     * @param queryValues
+     */
+    public void insertMeasureType(Measure_Type queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(UNIT, queryValues.getUnit());
+        values.put(CODESENS,queryValues.getCodeSens());
+        values.put(LABEL,queryValues.getLabel());
+        database.insert("measuretype", null, values);
+        database.close();
+    }
 
     ////   ////////////     DELETE //////////// ///////////////////////
+
+
+
+
+
+    //////   JSON Conversion ////////////
+    /**
+     * Compose JSON out of SQLite activity records
+     * @return
+     */
+    public String composeJSONfromActivities(){
+        ArrayList<HashMap<String, String>> wordList;
+        wordList = new ArrayList<HashMap<String, String>>();
+        String selectQuery = "SELECT  * FROM activity";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String, String> map = new HashMap<String,String>();
+                map.put("CodeActivity", cursor.getString(0));
+                map.put("ActivityLabel", cursor.getString(1));
+                wordList.add(map);
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        Gson gson = new GsonBuilder().create();
+        //Use GSON to serialize Array List to JSON
+        String res=gson.toJson(wordList);
+        System.out.println("JSON = "+res);
+        return res;
+    }
+
+    /**
+     * Compose JSON out of SQLite connexion
+     * @return
+     */
+    public String composeJSONfromConnexions(){
+        ArrayList<Connexion> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM connexion";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                //System.out.println("Date format SQLite "+cursor.getString(1) + " Date format "+
+                  //      Date.valueOf(cursor.getString(1).toString()));
+                wordList.add(new Connexion(cursor.getInt(0), Date.valueOf(cursor.getString(1)),
+                        Date.valueOf(cursor.getString(2)),
+                        cursor.getInt(3), cursor.getString(5), cursor.getString(4)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        //Gson gson = new GsonBuilder().create();
+        //Use GSON to serialize Array List to JSON
+        String res=gson.toJson(wordList);
+        System.out.println("JSON = "+res);
+        return res;
+    }
 
 }

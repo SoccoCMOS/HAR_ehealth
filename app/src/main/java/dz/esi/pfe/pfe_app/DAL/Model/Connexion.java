@@ -12,6 +12,9 @@ public class Connexion {
     String userID;
     String codeSens;
 
+    public Connexion() {
+    }
+
     public Connexion(Date startConnex, Date finishConnex, int frequency, String userID, String codeSens) {
         this.startConnex = startConnex;
         this.finishConnex = finishConnex;

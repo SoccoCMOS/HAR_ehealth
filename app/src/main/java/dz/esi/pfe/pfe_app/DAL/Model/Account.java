@@ -13,6 +13,12 @@ public class Account {
         this.email = email;
     }
 
+    public Account(String userID, String email, String password_hash) {
+        this.userID = userID;
+        this.email = email;
+        this.password_hash = password_hash;
+    }
+
     public String getUserID() {
         return userID;
     }
