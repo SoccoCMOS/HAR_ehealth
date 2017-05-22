@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class U_Matrix {
     
-    public static ArrayList<Double> multiply(double[][] a, double[][] b) {
+    public static ArrayList<Double> multiply(Double[][] a, Double[][] b) {
         int m1 = a.length;
         int n1 = a[0].length;
         int m2 = b.length;
@@ -17,7 +17,7 @@ public class U_Matrix {
         ArrayList<Double> c = new ArrayList<>();
         for (int i = 0; i < m1; i++)
             for (int j = 0; j < n2; j++) {
-                double temp=0;
+                Double temp=0.0;
                 for (int k = 0; k < n1; k++) {
                     temp+=a[i][k] * b[k][j];
                 }
@@ -27,18 +27,18 @@ public class U_Matrix {
         return c;
     }
 
-    public static double[][] transpose(double[][] a) {
+    public static Double[][] transpose(Double[][] a) {
         int m = a.length;
         int n = a[0].length;
-        double[][] b = new double[n][m];
+        Double[][] b = new Double[n][m];
         for (int i = 0; i < m; i++)
             for (int j = 0; j < n; j++)
                 b[j][i] = a[i][j];
         return b;
     }
 
-    public static double[][] norm(double[][] a){
-        double norm=0;
+    public static Double[][] norm(Double[][] a){
+        Double norm=0.0;
         for (int i=0; i<a.length; i++)
         {
             norm+=a[i][0]*a[i][0];

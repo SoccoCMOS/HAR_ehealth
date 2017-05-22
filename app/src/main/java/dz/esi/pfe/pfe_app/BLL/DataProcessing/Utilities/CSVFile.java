@@ -13,7 +13,7 @@ public class CSVFile {
 
     InputStream inputStream;
     List<String[]> resultList;
-    List<double[]> doubletList;
+    List<Double[]> doubletList;
 
     public CSVFile(InputStream inputStream) {
         this.inputStream = inputStream;
@@ -21,7 +21,7 @@ public class CSVFile {
 
     public void read() {
         resultList = new ArrayList<String[]>();
-        doubletList = new ArrayList<double[]>();
+        doubletList = new ArrayList<Double[]>();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         try {
@@ -43,8 +43,8 @@ public class CSVFile {
         }
     }
 
-    private double[] convert(String[] string) {
-        double number[] = new double[string.length];
+    private Double[] convert(String[] string) {
+        Double number[] = new Double[string.length];
 
         for (int i = 0; i < string.length; i++) {
             number[i] = Double.parseDouble(string[i]); //
@@ -64,13 +64,13 @@ public class CSVFile {
         this.resultList = resultList;
     }
 
-    public List<double[]> getDoubletList() {
+    public List<Double[]> getDoubletList() {
         return doubletList;
     }
 
-    public List<double[]> ReadfromTo(int pos, int length) {
+    public List<Double[]> ReadfromTo(int pos, int length) {
 
-        List<double[]> window = new ArrayList<double[]>();
+        List<Double[]> window = new ArrayList<Double[]>();
         if (pos + length <= doubletList.size()) {
             for (int i = 0; i < length; i++)
                 window.add(this.doubletList.get(pos + i));
@@ -82,11 +82,11 @@ public class CSVFile {
         return window;
     }
 
-    public static void writeCSVfile(String filename, double[] result) throws IOException {
+    public static void writeCSVfile(String filename, Double[] result) throws IOException {
 
         BufferedWriter br = new BufferedWriter(new FileWriter(filename, true));
         StringBuilder sb = new StringBuilder();
-        for (double element : result) {
+        for (Double element : result) {
             sb.append(element);
             sb.append("\t");
         }

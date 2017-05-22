@@ -3,89 +3,79 @@ package dz.esi.pfe.pfe_app.BLL.DataProcessing;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.util.Log;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p/>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
+import java.sql.Date;
+import java.util.List;
+
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Controllers.C_Processing;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Controllers.ECGAnalysis;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
+
 public class S_Processing extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "dz.esi.pfe.pfe_app.BLL.DataProcessing.action.FOO";
-    private static final String ACTION_BAZ = "dz.esi.pfe.pfe_app.BLL.DataProcessing.action.BAZ";
 
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "dz.esi.pfe.pfe_app.BLL.DataProcessing.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "dz.esi.pfe.pfe_app.BLL.DataProcessing.extra.PARAM2";
+    private static final String ACTION_HAR = "fehar" ;
+    private static final String ACTION_PHYSIO = "fephy";
 
     public S_Processing() {
         super("S_Processing");
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
+    public static void startActionFeHar(Context context, long begin, long end) {
         Intent intent = new Intent(context, S_Processing.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_HAR);
+        intent.putExtra("begin", begin);
+        intent.putExtra("end",end);
+        Log.d("onstartfehar","called start action fe har");
+        // pass parameters here
         context.startService(intent);
     }
 
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
+    public static void startActionFePhy(Context context, long begin, long end) {
         Intent intent = new Intent(context, S_Processing.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_PHYSIO);
+        intent.putExtra("begin", begin);
+        intent.putExtra("end", end);
+        Log.d("onstartfephy","called start action fe physio");
+        // pass parameters here
         context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
-            final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
-            }
+        Log.d("sv","started service"+intent.getAction());
+        Date begin=new Date(intent.getLongExtra("begin",0));
+        Date end=new Date(intent.getLongExtra("end",0));
+
+        if(intent.getAction().equals(ACTION_HAR)) {
+            List<Double[]> wd = WindowData.hardata;
+            // Set cp window
+            C_Processing cp = new C_Processing(this);
+            cp.setWindow(wd);
+
+            // Launch processWindow from cp
+            cp.processWindow(wd.size(), wd.get(0).length,begin,end);
+        }
+        else if (intent.getAction().equals(ACTION_PHYSIO)){
+            Double[] wd = new Double[WindowData.phydata.size()];
+            for(int i=0; i<WindowData.phydata.size(); i++)
+                wd[i]=WindowData.phydata.get(i)[0];
+            ECGAnalysis ea=new ECGAnalysis(wd,this,begin,end);
+            ea.getECGFeatures();
         }
     }
 
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+
+
+    @Override
+    public void onStart(Intent intent, int startId) {
+        super.onStart(intent, startId);
+        Log.d("sv", "on start service");
     }
 
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("sv", "on destroy service");
     }
 }

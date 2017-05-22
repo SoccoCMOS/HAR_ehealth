@@ -1,11 +1,13 @@
 package dz.esi.pfe.pfe_app.DAL.Model;
 
+import java.io.Serializable;
+
 import dz.esi.pfe.pfe_app.DAL.Model.Enum.Position;
 
 /**
  * Created by DUALCOMPUTER on 3/27/2017.
  */
-public class Measure_Type {
+public class Measure_Type implements Serializable {
     String codeSens;
     String label;
     String unit;

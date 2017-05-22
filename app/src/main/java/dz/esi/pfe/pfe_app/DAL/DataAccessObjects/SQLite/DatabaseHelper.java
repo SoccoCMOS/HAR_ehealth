@@ -5,10 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.lang.reflect.Array;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,9 +20,14 @@ import java.util.HashMap;
 import dz.esi.pfe.pfe_app.DAL.Model.Account;
 import dz.esi.pfe.pfe_app.DAL.Model.Activity;
 import dz.esi.pfe.pfe_app.DAL.Model.Connexion;
+import dz.esi.pfe.pfe_app.DAL.Model.Enum.BloodGroup;
+import dz.esi.pfe.pfe_app.DAL.Model.Enum.Gender;
+import dz.esi.pfe.pfe_app.DAL.Model.Enum.Position;
 import dz.esi.pfe.pfe_app.DAL.Model.FitnessMeasure;
+import dz.esi.pfe.pfe_app.DAL.Model.HeartRate;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Type;
+import dz.esi.pfe.pfe_app.DAL.Model.RPeaks;
 import dz.esi.pfe.pfe_app.DAL.Model.User;
 import dz.esi.pfe.pfe_app.DAL.Model.WindowActivity;
 
@@ -47,6 +54,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TABLE_MEASURETYPE= "MeasureType";
     private static final String TABLE_USER= "User";
     private static final String TABLE_WINDOWACTIVITY= "WindowActivity";
+    private static final String TABLE_RPEAKS= "RPeaks";
+    private static final String TABLE_HEARTRATE= "HeartRate";
 
     // Column Names - Account
     private static final String USERID="User_ID";
@@ -123,6 +132,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             +  "FOREIGN KEY(" + USERID + ") REFERENCES " + TABLE_USER + "(" + USERID + ")"
             +  "FOREIGN KEY(" + CODEACTIVITY + ") REFERENCES " + TABLE_ACTIVITY + "(" + CODEACTIVITY + ")" + ")";
 
+    private static String CREATE_TABLE_RPEAKS= "CREATE TABLE " + TABLE_RPEAKS + "(" + ID + " INTEGER, " +
+            VALUE + " REAL, " + TIMESTAMP + " DATETIME, " + USERID + " TEXT, " + "FOREIGN KEY(" + USERID + ") REFERENCES " + TABLE_USER + "("
+            + USERID + "), " + "PRIMARY KEY(" + ID + ")" +")";
+
+    private static String CREATE_TABLE_HEARTRATE= "CREATE TABLE " + TABLE_HEARTRATE + "(" + ID + " INTEGER, " +
+            VALUE + " REAL, " + TIMESTAMP + " DATETIME, " + USERID + " TEXT, " + "FOREIGN KEY(" + USERID + ") REFERENCES " + TABLE_USER + "("
+            + USERID + "), " + "PRIMARY KEY(" + ID + ")" +")";
+
 
     public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -142,6 +159,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_FITNESSMEASURE);
         db.execSQL(CREATE_TABLE_MEASUREDATA);
         db.execSQL(CREATE_TABLE_WINDOWACTIVITY);
+        db.execSQL(CREATE_TABLE_RPEAKS);
+        db.execSQL(CREATE_TABLE_HEARTRATE);
     }
 
     @Override
@@ -227,7 +246,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(START,w.getStart().toString());
         values.put(FINISH,w.getFinish().toString());
         values.put(CODEACTIVITY,w.getCodeActivity());
-        values.put(USERID,w.getUserID());
+        values.put(USERID, w.getUserID());
 
         long row_id= db.insert(TABLE_WINDOWACTIVITY,null,values);
         return row_id;
@@ -242,7 +261,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(FINISHCONNEX,c.getfinishConnex().toString());
         values.put(FREQUENCY,c.getFrequency());
         values.put(CODESENS,c.getCodeSens());
-        values.put(USERID,c.getUserID());
+        values.put(USERID, c.getUserID());
 
         long row_id= db.insert(TABLE_CONNEXION,null,values);
         return row_id;
@@ -259,6 +278,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERID, md.getUserID());
 
         long row_id= db.insert(TABLE_MEASUREDATA,null,values);
+        return row_id;
+    }
+
+    public long createRPeaks(RPeaks md){
+        SQLiteDatabase db=this.getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put(ID,md.getId());
+        values.put(VALUE, md.getValue());
+        values.put(TIMESTAMP, md.getTimestamp().toString());
+        values.put(USERID, md.getUserID());
+
+        long row_id= db.insert(TABLE_RPEAKS,null,values);
+        return row_id;
+    }
+
+    public long createHeartRate(HeartRate md){
+        SQLiteDatabase db=this.getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put(ID,md.getId());
+        values.put(VALUE, md.getValue());
+        values.put(TIMESTAMP, md.getTimestamp().toString());
+        values.put(USERID, md.getUserID());
+
+        long row_id= db.insert(TABLE_HEARTRATE,null,values);
         return row_id;
     }
 
@@ -283,18 +326,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Get list of Activities from SQLite DB as Array List
      * @return
      */
-    public ArrayList<HashMap<String, String>> getAllActivities() {
-        ArrayList<HashMap<String, String>> wordList;
-        wordList = new ArrayList<HashMap<String, String>>();
+    public ArrayList<Activity> getAllActivities() {
+        ArrayList<Activity> wordList;
+        wordList = new ArrayList<>();
         String selectQuery = "SELECT  * FROM activity";
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("CodeActivity", cursor.getString(0));
-                map.put("ActivityLabel", cursor.getString(1));
-                wordList.add(map);
+                wordList.add(new Activity(cursor.getString(0), cursor.getString(1)));
             } while (cursor.moveToNext());
         }
         database.close();
@@ -316,6 +356,166 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 wordList.add(new Connexion(cursor.getInt(0), Date.valueOf(cursor.getString(1)),
                 Date.valueOf(cursor.getString(2)),
                 cursor.getInt(3), cursor.getString(5), cursor.getString(4)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of Account from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<Account> getAllAccounts() {
+        ArrayList<Account> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM account";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new Account(cursor.getString(0),cursor.getString(1)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of fitness measures from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<FitnessMeasure> getAllFitnessMeasures() {
+        ArrayList<FitnessMeasure> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM fitnessmeasure";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new FitnessMeasure(cursor.getLong(0),cursor.getDouble(1),cursor.getDouble(2),
+                        cursor.getDouble(3),Date.valueOf(cursor.getString(4)),cursor.getString(5)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of measure data from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<Measure_Data> getAllMeasureData() {
+        ArrayList<Measure_Data> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM measuredata";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new Measure_Data(cursor.getLong(0),cursor.getString(1),cursor.getDouble(2),
+                        Date.valueOf(cursor.getString(3)),cursor.getString(4)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of rpeaks from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<RPeaks> getAllRPeaks() {
+        ArrayList<RPeaks> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM rpeaks";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new RPeaks(cursor.getLong(0),cursor.getDouble(1),
+                        Date.valueOf(cursor.getString(2)),cursor.getString(3)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of heartrates from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<HeartRate> getAllHeartRates() {
+        ArrayList<HeartRate> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM heartrate";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new HeartRate(cursor.getLong(0),cursor.getDouble(1),
+                        Date.valueOf(cursor.getString(2)),cursor.getString(3)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of type measures from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<Measure_Type> getAllMeasureTypes() {
+        ArrayList<Measure_Type> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM measuretype";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new Measure_Type(cursor.getString(0),cursor.getString(1),
+                        cursor.getString(2), Position.valueOf(cursor.getString(3))));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of users from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<User> getAllUsers() {
+        ArrayList<User> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM user";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new User(cursor.getString(0),cursor.getString(1),
+                        Gender.valueOf(cursor.getString(2)),Date.valueOf(cursor.getString(3)),
+                                BloodGroup.valueOf(cursor.getString(4))));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
+    /**
+     * Get list of window activities from SQLite DB as Array List
+     * @return
+     */
+    public ArrayList<WindowActivity> getAllWindowActivities() {
+        ArrayList<WindowActivity> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM windowactivity";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new WindowActivity(cursor.getLong(0),Date.valueOf(cursor.getString(1)),
+                        Date.valueOf(cursor.getString(2)),cursor.getString(3),cursor.getString(4)));
             } while (cursor.moveToNext());
         }
         database.close();
@@ -374,7 +574,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void insertUser(User queryValues) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(BIRTHDAY,queryValues.getBirthday().toString());
+        values.put(BIRTHDAY,String.valueOf(queryValues.getBirthday()));
         values.put(BLOODGROUP,queryValues.getBloodGroup().toString());
         values.put(GENDER,queryValues.getGender().toString());
         values.put(NAME,queryValues.getName());
@@ -397,12 +597,154 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.close();
     }
 
+    /**
+     * Inserts MeasureData into SQLite DB
+     * @param queryValues
+     */
+    public void insertMeasureData(Measure_Data queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CODESENS,queryValues.getCodeSens());
+        values.put(ID,queryValues.getId());
+        values.put(VALUE,queryValues.getValue());
+        values.put(TIMESTAMP,String.valueOf(queryValues.getTimestamp()));
+        values.put(USERID,queryValues.getUserID());
+        database.insert("measuredata", null, values);
+        database.close();
+    }
+
+    /**
+     * Inserts RPeaks into SQLite DB
+     * @param queryValues
+     */
+    public void insertRPeak(RPeaks queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ID,queryValues.getId());
+        values.put(VALUE,queryValues.getValue());
+        values.put(TIMESTAMP,String.valueOf(queryValues.getTimestamp()));
+        values.put(USERID,queryValues.getUserID());
+        database.insert(TABLE_RPEAKS, null, values);
+        database.close();
+    }
+
+    public void insertRPeaks(ArrayList<RPeaks> queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        database.beginTransaction();
+        for(int i=0; i<queryValues.size(); i++) {
+            values.put(ID, queryValues.get(i).getId());
+            values.put(VALUE, queryValues.get(i).getValue());
+            values.put(TIMESTAMP, String.valueOf(queryValues.get(i).getTimestamp()));
+            values.put(USERID, queryValues.get(i).getUserID());
+            database.insert(TABLE_RPEAKS, null, values);
+        }
+        database.setTransactionSuccessful();
+        database.endTransaction();
+        database.close();
+    }
+
+    public void insertMeasureDatas(ArrayList<Measure_Data> queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        database.beginTransaction();
+        for(int i=0; i<queryValues.size(); i++) {
+            values.put(CODESENS,queryValues.get(i).getCodeSens());
+            values.put(ID,queryValues.get(i).getId());
+            values.put(VALUE,queryValues.get(i).getValue());
+            values.put(TIMESTAMP,String.valueOf(queryValues.get(i).getTimestamp()));
+            values.put(USERID,queryValues.get(i).getUserID());
+            database.insert(TABLE_MEASUREDATA, null, values);
+        }
+        database.setTransactionSuccessful();
+        database.endTransaction();
+        database.close();
+    }
+
+    /**
+     * Inserts HeartRate into SQLite DB
+     * @param queryValues
+     */
+    public void insertHeartrate(HeartRate queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ID,queryValues.getId());
+        values.put(VALUE,queryValues.getValue());
+        values.put(TIMESTAMP,String.valueOf(queryValues.getTimestamp()));
+        values.put(USERID,queryValues.getUserID());
+        database.insert(TABLE_HEARTRATE, null, values);
+        database.close();
+    }
+
+    public void insertFitnessMeasure(FitnessMeasure queryValues) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(ID,queryValues.getIdFM());
+        values.put(WAIST,queryValues.getWaist());
+        values.put(WEIGHT,queryValues.getWeight());
+        values.put(HEIGHT,queryValues.getHeight());
+        values.put(DATE, String.valueOf(queryValues.getDateUpdate()));
+        values.put(USERID,queryValues.getUserID());
+        database.insert("fitnessmeasure", null, values);
+        database.close();
+    }
+
+    public void insertWindowActivity(WindowActivity queryValues) {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
+
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CODEACTIVITY,queryValues.getCodeActivity());
+        values.put(IDWINDOW,queryValues.getIdWindow());
+        values.put(START, sdfDate.format(queryValues.getStart()));
+        //Log.d("start", sdfDate.format(queryValues.getStart()));
+        values.put(FINISH, sdfDate.format(queryValues.getFinish()));
+        //Log.d("finish", sdfDate.format(queryValues.getFinish()));
+        values.put(USERID,queryValues.getUserID());
+        database.insert("windowactivity", null, values);
+        database.close();
+    }
+
+    //////  GET ACTIVITY OF WINDOW //////////////
+    public Activity getActivityByInstant(Date instant){
+        ArrayList<WindowActivity> wordList=new ArrayList<>();
+        WindowActivity wact;
+        String selectQuery = "SELECT  * FROM windowactivity";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        int n=0;
+        if (cursor.moveToFirst()) {
+            Log.d("checkempty","not empty");
+            do {
+                //Log.d("wactstartcursor",cursor.getString(1));
+                //Log.d("wactfinishcursor",cursor.getString(2));
+                try {
+                    wact= new WindowActivity(cursor.getLong(0),new Date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(cursor.getString(1)).getTime()),
+                            new Date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(cursor.getString(2)).getTime()),
+                            cursor.getString(4),cursor.getString(3));
+                Log.d("wactstart"+n,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(wact.getStart()));
+                Log.d("wactfinish"+n,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(wact.getFinish()));
+                if(wact.getStart().getTime()<=instant.getTime() & wact.getFinish().getTime()>=instant.getTime()) {
+                    wordList.add(wact);
+                }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                n++;
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        if(wordList.size()!=0) return new Activity(Integer.valueOf(wordList.get(0).getCodeActivity()));
+        else return new Activity(0);
+    }
+
     ////   ////////////     DELETE //////////// ///////////////////////
 
 
 
 
 
+    /********************  Code for synchronization *************************************/
     //////   JSON Conversion ////////////
     /**
      * Compose JSON out of SQLite activity records

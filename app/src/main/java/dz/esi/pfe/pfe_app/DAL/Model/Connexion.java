@@ -1,11 +1,12 @@
 package dz.esi.pfe.pfe_app.DAL.Model;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 /**
  * Created by DUALCOMPUTER on 3/27/2017.
  */
-public class Connexion {
+public class Connexion implements Serializable {
     int idConnex;
     Date startConnex, finishConnex;
     int frequency;

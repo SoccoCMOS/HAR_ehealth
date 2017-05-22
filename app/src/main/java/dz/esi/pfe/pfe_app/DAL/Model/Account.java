@@ -1,9 +1,11 @@
 package dz.esi.pfe.pfe_app.DAL.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by DUALCOMPUTER on 3/27/2017.
  */
-public class Account {
+public class Account implements Serializable{
     String userID;
     String email;
     String password_hash;

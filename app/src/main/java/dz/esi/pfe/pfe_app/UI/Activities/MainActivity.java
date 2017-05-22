@@ -1,7 +1,6 @@
 package dz.esi.pfe.pfe_app.UI.Activities;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,29 +10,22 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
+import java.io.InputStream;
 import java.sql.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
 
-import dz.esi.pfe.pfe_app.BLL.DataProcessing.ActivityRecognition;
-import dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities.U_FeatureExtraction;
-import dz.esi.pfe.pfe_app.DAL.DataAccessObjects.CloudStorage.SyncMySQL;
-import dz.esi.pfe.pfe_app.DAL.DataAccessObjects.SQLite.DatabaseHelper;
-import dz.esi.pfe.pfe_app.DAL.Model.Account;
-import dz.esi.pfe.pfe_app.DAL.Model.Activity;
-import dz.esi.pfe.pfe_app.DAL.Model.Connexion;
-import dz.esi.pfe.pfe_app.DAL.Model.Enum.BloodGroup;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.S_DecisionSupport;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.S_Processing;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities.CSVFile;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities.U_DecisionRules;
+import dz.esi.pfe.pfe_app.DAL.DataAccessObjects.Utilities;
 import dz.esi.pfe.pfe_app.DAL.Model.Enum.Gender;
-import dz.esi.pfe.pfe_app.DAL.Model.Enum.Position;
-import dz.esi.pfe.pfe_app.DAL.Model.Measure_Type;
-import dz.esi.pfe.pfe_app.DAL.Model.User;
+import dz.esi.pfe.pfe_app.DAL.Model.HeartRate;
 import dz.esi.pfe.pfe_app.R;
+import dz.esi.pfe.pfe_app.Unit_Tests.MonitoringTest;
+import dz.esi.pfe.pfe_app.Unit_Tests.QueryTests;
+import dz.esi.pfe.pfe_app.Unit_Tests.U_DecisionTest;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,35 +45,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Toast.makeText(MainActivity.this, "finished", Toast.LENGTH_SHORT).show();
-        //DatabaseHelper db=new DatabaseHelper(getApplicationContext(),"patientActivity",null,1);
-        //SQLiteDatabase data=db.getWritableDatabase();
-
-        //SyncMySQL syncMySQL=new SyncMySQL(db);
-
-        /*
-        // Insert Activity
-        ArrayList<HashMap<String,String>> arrayList= db.getAllActivities();
-        */
-        // Sync Dataabse
-        //syncMySQL.syncActivitiesMySQLDB();
-
-//        Calendar currenttime = Calendar.getInstance();
-//        //Date sqldate = Date.valueOf("20170403");
-//
-//        // Insert Connexion
-//        db.insertAccount(new Account("socco","sara.simoussi@gmail.com","x"));
-//        Date date=new Date(currenttime.getTimeInMillis());
-//        System.out.println("Date obtenue = "+date.toString());
-//        db.insertUser(new User("socco", "Soccorito", Gender.Female, date, BloodGroup.B));
-//
-//        db.insertMeasureType(new Measure_Type("Gyr", "Gyroscope", "rad", Position.WAIST));
-//
-//        db.insertConnexion(new Connexion(3, date, date, 50, "socco", "Gyr"));
-//
-//        // Sync Database
-//        syncMySQL.syncConnexionsMySQLDB();
-//        Toast.makeText(MainActivity.this, "Done", Toast.LENGTH_SHORT).show();
+        U_DecisionRules.load_knowledge();
+        MonitoringTest.context=this;
+        MonitoringTest.testMonitoring();
+//        QueryTests.context=this;
+//        QueryTests.testActivityWindowInsert();
+//        U_DecisionTest.context=this;
+//        U_DecisionTest.test_checkHR();
     }
 
     @Override

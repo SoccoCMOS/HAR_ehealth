@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <category name="General">
+        <data name="Age" values="continu" type="standalone">
+            <rules>
+                <intervalle sup="3"> Nourrisson </intervalle>
+                <intervalle inf="4" sup="15"> Enfant </intervalle>
+                <intervalle inf="16" sup="60"> Adulte </intervalle>
+                <intervalle inf="60"> Vieux </intervalle>
+            </rules>
+        </data>
+
+        <data name="Sexe" values="classe" type="standalone">
+            <rules>
+                <classe value="F"> Femelle </classe>
+                <classe value="M"> Male </classe>
+                <classe value="T"> Transgenre </classe>
+                <classe value="U"> Inconnu </classe>
+            </rules>
+        </data>
+
+        <data name="GS" values="classe" type="standalone">
+            <rules>
+                <classe value="A+"> A Rhesus Positif </classe>
+                <classe value="A-"> A Rhesus Negatif </classe>
+                <classe value="B+"> B Rhesus Positif </classe>
+                <classe value="B-"> B Rhesus Negatif </classe>
+                <classe value="O+"> O Rhesus Positif </classe>
+                <classe value="O-"> O Rhesus Negatif </classe>
+                <classe value="AB+"> AB Rhesus Positif </classe>
+                <classe value="AB-"> AB Rhesus Negatif </classe>
+            </rules>
+        </data>
+    </category>
+
+    <category name="fitness">
+        <data name="IMC" values="continu" type="standalone">
+            <rules>
+                <intervalle sup="16"> Famine </intervalle>
+                <intervalle inf="16.5" sup="18.5"> Maigreur </intervalle>
+                <intervalle inf="18.5" sup="25"> Corpulence normale </intervalle>
+                <intervalle inf="25" sup="30"> Surpoids </intervalle>
+                <intervalle inf="30" sup="35"> Obésité modérée </intervalle>
+                <intervalle inf="35" sup="40"> Obésité sévère </intervalle>
+                <intervalle inf="40"> Obésité morbide </intervalle>
+            </rules>
+        </data>
+        <data name="Waist-to-Height" values="continu" type="standalone">
+            <rules>
+                <intervalle sup="0.4"> Sous-poids </intervalle>
+                <intervalle inf="0.4" sup="0.6"> Normal </intervalle>
+                <intervalle inf="0.61" sup="0.66"> Surpoids </intervalle>
+                <intervalle inf="0.67" sup="0.78"> Obésité </intervalle>
+                <intervalle inf="0.78"> Obésité sévère </intervalle>
+            </rules>
+        </data>
+    </category>
+
+    <category name="Activité">
+        <data name="intensité" values="classe" type="standalone">
+            <rules>
+                <classe value="Assis">  Repos </classe>
+                <classe value="Allongé"> Repos </classe>
+                <classe value="Debout"> Repos </classe>
+
+                <classe value="Penché en avant"> Faible </classe>
+                <classe value="Main en l'air"> Faible </classe>
+                <classe value="Genou plié"> Faible </classe>
+
+                <classe value="Marche"> Modéré </classe>
+                <classe value="Monte les escaliers"> Modéré </classe>
+                <classe value="A vélo"> Modéré </classe>
+
+                <classe value="Course"> Intense </classe>
+                <classe value="Footing"> Intense </classe>
+                <classe value="Saut avant arrière"> Intense </classe>
+            </rules>
+        </data>
+
+        <data name="Age" values="classe" type="combined" var="Activité.Intensité">
+            <rules>
+                <intervalle inf="5" sup="17" intensité="Modéré">60j</intervalle>
+                <intervalle inf="5" sup="17" intensité="Intense">180s</intervalle>
+
+                <intervalle inf="18" sup="64" intensité="Modéré">300s</intervalle>
+                <intervalle inf="18" sup="64" intensité="Intense">150s</intervalle>
+
+                <intervalle inf="65" intensité="Modéré">150s</intervalle>
+                <intervalle inf="65" intensité="Intense">75s</intervalle>
+            </rules>
+        </data>
+
+    </category>
+
+    <category name="vital">
+        <data name="rhr" values="continu" type="combined" var="General.Age">
+            <rules>
+                <intervalle sup="129" Age="Nourrisson"> Bradycardie </intervalle>
+                <intervalle inf="130" sup="140" Age="Nourrisson"> Normal </intervalle>
+                <intervalle inf="141" Age="Nourrisson"> Tachycardie </intervalle>
+
+                <intervalle sup="79" age="Enfant"> Bradycardie </intervalle>
+                <intervalle inf="80" sup="110" age="Enfant"> Normal </intervalle>
+                <intervalle inf="111" age="Enfant"> Tachycardie </intervalle>
+
+                <intervalle sup="59" age="Adulte"> Bradycardie </intervalle>
+                <intervalle inf="60" sup="80" age="Adulte"> Normal </intervalle>
+                <intervalle inf="81" age="Adulte"> Tachycardie </intervalle>
+
+                <intervalle sup="54" age="Vieux"> Bradycardie </intervalle>
+                <intervalle inf="55" sup="60" age="Vieux"> Normal </intervalle>
+                <intervalle inf="61" age="Vieux"> Tachycardie </intervalle>
+            </rules>
+        </data>
+
+        <data name="ahr_pmax" values="continu" type="combined" var="Activité.Intensité">
+            <rules>
+                <intervalle sup="30" Intensité="Faible">Bas</intervalle>
+                <intervalle inf="31" sup="49" Intensité="Faible">Normal</intervalle>
+                <intervalle inf="50" Intensité="Faible">Elevé</intervalle>
+
+                <intervalle sup="50" Intensité="Modéré">Bas</intervalle>
+                <intervalle inf="51" sup="69" Intensité="Modéré">Normal</intervalle>
+                <intervalle inf="70" Intensité="Modéré">Elevé</intervalle>
+
+                <intervalle sup="70" Intensité="Intense">Bas</intervalle>
+                <intervalle inf="71" sup="100" Intensité="Intense">Normal</intervalle>
+                <intervalle inf="100" Intensité="Intense">Elevé</intervalle>
+            </rules>
+        </data>
+
+        <data name="maxhr" values="single" type="combined" var="General.Sexe">
+            <rules>
+                <value Sexe="Female">226</value>
+                <value Sexe="Male">220</value>
+            </rules>
+        </data>
+
+    </category>
+</resources>

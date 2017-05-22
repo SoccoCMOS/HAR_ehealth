@@ -28,18 +28,18 @@ public class SyncMySQL {
         this.controller = databaseHelper;
     }
 
-    public void syncActivitiesMySQLDB() {
-        //Create AsycHttpClient object
-        AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams params = new RequestParams();
-        ArrayList<HashMap<String, String>> activityList = controller.getAllActivities();
-        if (activityList.size() != 0) {
-            //System.out.println("array list has " + activityList.size() + " items");
-            params.put("activitiesJSON", controller.composeJSONfromActivities());
-            // EXECUTE PHP Script
-            client.post("http://192.168.1.4/sqlitemysqlsync/activity/insertactivity.php", params, new AsyncHttpResponseHandler());
-        }
-    }
+//    public void syncActivitiesMySQLDB() {
+//        //Create AsycHttpClient object
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        RequestParams params = new RequestParams();
+//        ArrayList<HashMap<String, String>> activityList = controller.getAllActivities();
+//        if (activityList.size() != 0) {
+//            //System.out.println("array list has " + activityList.size() + " items");
+//            params.put("activitiesJSON", controller.composeJSONfromActivities());
+//            // EXECUTE PHP Script
+//            client.post("http://192.168.1.4/sqlitemysqlsync/activity/insertactivity.php", params, new AsyncHttpResponseHandler());
+//        }
+//    }
 
     public void syncConnexionsMySQLDB(){
         //Create AsycHttpClient object

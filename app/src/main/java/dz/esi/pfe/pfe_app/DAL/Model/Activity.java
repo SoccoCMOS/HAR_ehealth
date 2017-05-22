@@ -1,9 +1,11 @@
 package dz.esi.pfe.pfe_app.DAL.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by DUALCOMPUTER on 3/27/2017.
  */
-public class Activity {
+public class Activity implements Serializable {
 
     String codeActivity;
     String activityLabel;

@@ -1,5 +1,6 @@
 package dz.esi.pfe.pfe_app.DAL.Model;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import dz.esi.pfe.pfe_app.DAL.Model.Enum.BloodGroup;
@@ -8,7 +9,7 @@ import dz.esi.pfe.pfe_app.DAL.Model.Enum.Gender;
 /**
  * Created by DUALCOMPUTER on 3/27/2017.
  */
-public class User {
+public class User implements Serializable {
     String userID;
     String name;
     Gender gender;

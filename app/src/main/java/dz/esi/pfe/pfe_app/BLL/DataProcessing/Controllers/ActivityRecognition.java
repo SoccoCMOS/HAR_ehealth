@@ -1,4 +1,4 @@
-package dz.esi.pfe.pfe_app.BLL.DataProcessing;
+package dz.esi.pfe.pfe_app.BLL.DataProcessing.Controllers;
 
 import android.content.Context;
 import android.util.Log;
@@ -17,46 +17,46 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities.U_Matrix;
 import dz.esi.pfe.pfe_app.DAL.Model.Activity;
+import dz.esi.pfe.pfe_app.DAL.Model.WindowActivity;
+import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
 
 /**
  * Created by Sara on 5/12/2017.
  * This class handles the patterns service provider call for activity recognition
  */
 public class ActivityRecognition {
-    int count=0;
-    double[][] featureVector;
+    static long count=0;
+    Context context;
+    Double[][] featureVector;
     RequestQueue queue;
-    String url="http://192.168.1.6:8000/activity/";
-    String urlget="http://192.168.1.6:8000/activity/?param=no+param&tr=NP&p=1&wid="+count;
+    String url="http://192.168.0.18:8000/activity/";
+    String urlget="http://192.168.0.18:8000/activity/?param=no+param&tr=NP&p=1&wid="+count;
     Activity activity;
-    double np[][];
+    Double np[][];
     ArrayList<Double> npb;
-    double b[][];
+    Double b[][];
     int c[];
     String ja;
     Map<String, String> params;
     long[] latency=new long[2];
+    Date begin, finish;
 
-    public ActivityRecognition(double[][] featureVector, Context c) {
+    public ActivityRecognition(Double[][] featureVector, Context c, Date begin, Date finish) {
         this.featureVector = featureVector;
         queue = Volley.newRequestQueue(c);
+        context=c;
+        this.begin=begin;
+        this.finish=finish;
     }
 
-    public double[][] getFeatureVector() {
-        return featureVector;
-    }
-
-    public void setFeatureVector(double[][] featureVector) {
-        this.featureVector = featureVector;
-    }
-
-    public Activity getActivityByFeatures()
+    public void getActivityByFeatures()
     {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, urlget,null, new Response.Listener<JSONObject>() {
@@ -66,7 +66,7 @@ public class ActivityRecognition {
                         try {
                             ja=response.getString("content");
                             Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
-                            np =    gsonPretty.fromJson(ja, double[][].class);
+                            np =    gsonPretty.fromJson(ja, Double[][].class);
                             Log.d("np first and last",""+np[0][0]+"  "+np[125][83]);
                             b= U_Matrix.norm(featureVector);
                             Log.d("b first and last",""+b[0][0]+"  "+b[83][0]);
@@ -87,6 +87,12 @@ public class ActivityRecognition {
                                                 int[] classes= gsonPretty.fromJson(jar, int[].class);
                                                 activity = new Activity(classes[0]);
                                                 Log.d("activity",activity.getActivityLabel());
+
+                                                // Lancer une tâche d'écriture de l'activité en base de donnée
+                                                S_DataAccess.startActionInsert(context,"windowactivity",
+                                                        new WindowActivity(count,begin,finish,activity.getCodeActivity(),"socco"));
+
+                                                count++;
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -142,6 +148,5 @@ public class ActivityRecognition {
             }
         };
         queue.add(jsObjRequest);
-        return activity;
     }
 }

@@ -3,6 +3,10 @@
     package="dz.esi.pfe.pfe_app">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -23,7 +27,18 @@
 
         <service
             android:name=".BLL.DataProcessing.S_Processing"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <service
+            android:name=".BLL.DataProcessing.S_DecisionSupport"
+            android:exported="false" />
+
+        <service
+            android:name=".DAL.S_DataAccess"
+            android:exported="false" />
+
+        <service android:name="org.eclipse.paho.android.service.MqttService" >
+        </service>
     </application>
 
 </manifest>

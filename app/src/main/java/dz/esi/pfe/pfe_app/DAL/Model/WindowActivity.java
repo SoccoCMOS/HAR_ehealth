@@ -1,11 +1,12 @@
 package dz.esi.pfe.pfe_app.DAL.Model;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 /**
  * Created by DUALCOMPUTER on 3/27/2017.
  */
-public class WindowActivity {
+public class WindowActivity implements Serializable {
     long idWindow;
     Date start, finish;
     String userID;
