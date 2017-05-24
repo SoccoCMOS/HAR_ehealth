@@ -8,6 +8,8 @@ import java.util.HashMap;
 
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.Interpretation;
 import dz.esi.pfe.pfe_app.DAL.Model.Enum.Gender;
+import dz.esi.pfe.pfe_app.DAL.Model.HeartRate;
+import dz.esi.pfe.pfe_app.DAL.Model.RPeaks;
 
 /**
  * Created by DUALCOMPUTER on 3/28/2017.
@@ -45,6 +47,12 @@ public class U_DecisionRules {
     public static HashMap<Integer,int[]> a_thresholds;
 
     public static HashMap<Integer,int[]> recommendact;
+
+    public static String rr_cases[];
+    public static double rr_thresholds[];
+    public static int rr_nb_cases, rr_normal;
+    public static String arythmias[], rythmias[];
+    public static int rreg_nb_cases, index_arythmias;
 
     public static void load_knowledge(){
         // Maximum Heart rate
@@ -105,6 +113,67 @@ public class U_DecisionRules {
         recommendact.put(1,new int[]{360,180});
         recommendact.put(2,new int[]{300,150});
         recommendact.put(3,new int[]{150,75});
+
+        // RR
+        rr_cases=new String[]{"Court","Normalcourt","Normal","Prolongé"};
+        rr_nb_cases=4;
+        rr_normal=2;
+        rr_thresholds=new double[]{0,0.42,0.6,1.2};
+
+        // Arythmias
+        rreg_nb_cases = 2;
+        index_arythmias=1;
+        arythmias=new String[]{"Bradyarythmie","Arythmie","Tachyarythmie"};
+        rythmias=new String[]{"Sinus Bradycardie","Sinus Normal","Sinus Tachycardie"};
+    }
+
+                /***************   Holistic interpretation *********************/
+    public static Interpretation[] interprete_all(Double hr, int codeAct, int age, Gender g, Double rpks[]){
+        Interpretation[] interpretations=new Interpretation[4];
+                            /*** Interpreting heart rate vs age, gender, activity ***/
+        interpretations[0]=interprete_hr(hr, codeAct, age, g);
+
+                            /*** Interpreting R-R intervals size ***/
+        Double[] rr_intervals=process_rrintervals(rpks);
+        boolean rr_sizes_normal=true;
+        String details="";
+        Interpretation inter;
+        for(int i=0; i<rr_intervals.length; i++){
+            inter=interprete_rr(rr_intervals[i]);
+            rr_sizes_normal=rr_sizes_normal&inter.getNormal();
+            details+=inter.getDetails()+" ";
+        }
+        interpretations[1]=new Interpretation(rr_sizes_normal,details);
+
+                        /*** Interpreting rythm variability ***/
+        interpretations[2]=interprete_rreg(rr_intervals);
+
+                        /*** Detecting arythmias ***/
+        if(interpretations[0].equals(hr_cases[0]) || interpretations[0].equals(ahr_cases[0])){
+            if(interpretations[2].equals("Régulier")) {
+                interpretations[3]=detect_arythmia(0,0);
+            }
+            else{
+                interpretations[3]=detect_arythmia(1,0);
+            }
+        }
+        else if(interpretations[0].equals(hr_cases[1]) || interpretations[0].equals(ahr_cases[1])){
+            if(interpretations[2].equals("Régulier")) {
+                interpretations[3]=detect_arythmia(0,1);
+            }
+            else{
+                interpretations[3]=detect_arythmia(1,1);
+            }
+        }
+        else {
+            if(interpretations[2].equals("Régulier")) {
+                interpretations[3]=detect_arythmia(0,2);
+            }
+            else{
+                interpretations[3]=detect_arythmia(1,2);
+            }
+        }
+        return interpretations;
     }
 
                     /************* Interpreting Heart Rate *******************/
@@ -155,6 +224,72 @@ public class U_DecisionRules {
         return interpretation;
     }
 
+                    /************ Interpreting R-R Intervals  ******************/
+    public static Interpretation interprete_rr(Double rr){
+        Interpretation interpretation=new Interpretation();
+        int i;
+        for(i=0; i<rr_nb_cases-1;i++){
+            if(rr<rr_thresholds[i+1])
+            {
+                interpretation.setDetails(rr_cases[i]);
+                if (i!=rr_normal) interpretation.setNormal(false);
+                return interpretation;
+            }
+        }
+        interpretation.setDetails(rr_cases[i]);
+        interpretation.setNormal(false);
+        return interpretation;
+    }
+
+    public static Double[] process_rrintervals(Double peaks[]){
+        Double rr_intervals[]=new Double[peaks.length-1];
+
+        for(int i=0; i<peaks.length-1; i++){
+            rr_intervals[i]=peaks[i+1]-peaks[i];
+        }
+        return rr_intervals;
+    }
+
+    public static Interpretation interprete_rreg(Double rr_intervals[]){
+        Interpretation interpretation=new Interpretation();
+        boolean constant=true;
+
+        for(int i=0; i<rr_intervals.length-1; i++){
+            constant=((rr_intervals[i+1]-rr_intervals[i])==0);
+            if(!constant) return new Interpretation(false,"Irrégulier");
+        }
+
+        return new Interpretation(true,"Régulier");
+    }
+
+    public static Interpretation interprete_rrreg(Double peaks[]){
+        Double rr_intervals[]=process_rrintervals(peaks);
+        Interpretation interpretation=new Interpretation();
+        boolean constant=true;
+
+        for(int i=0; i<rr_intervals.length-1; i++){
+            constant=((rr_intervals[i+1]-rr_intervals[i])==0);
+            if(!constant) return new Interpretation(false,"Irrégulier");
+        }
+
+        return new Interpretation(true,"Régulier");
+    }
+
+    public static Interpretation detect_arythmia(int categ_rrreg,int categ_hr){
+        Interpretation interpretation=new Interpretation();
+        if(categ_rrreg==0)
+        {
+            interpretation.setDetails(rythmias[categ_hr]);
+            if(categ_hr!=hr_normal) interpretation.setNormal(false);
+        }
+        else if(categ_rrreg==1)
+        {
+            interpretation.setDetails(arythmias[categ_hr]);
+            interpretation.setNormal(false);
+        }
+        return interpretation;
+    }
+
                     /************* Interpreting Fitness Data *******************/
     public static Interpretation interprete_imc(Double weight, Double height){
         Interpretation interpretation=new Interpretation();
@@ -169,6 +304,7 @@ public class U_DecisionRules {
             }
         }
         interpretation.setDetails(classes[i]);
+        interpretation.setNormal(false);
         return interpretation;
     }
 
@@ -185,6 +321,7 @@ public class U_DecisionRules {
             }
         }
         interpretation.setDetails(wh_classes[i]);
+        interpretation.setNormal(false);
         return interpretation;
     }
 

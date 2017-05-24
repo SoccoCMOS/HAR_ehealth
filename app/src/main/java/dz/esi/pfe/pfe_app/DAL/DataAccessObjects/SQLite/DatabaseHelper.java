@@ -654,6 +654,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(VALUE,queryValues.get(i).getValue());
             values.put(TIMESTAMP,String.valueOf(queryValues.get(i).getTimestamp()));
             values.put(USERID,queryValues.get(i).getUserID());
+            //Log.d("insertingid",String.valueOf(queryValues.get(i).getId()));
             database.insert(TABLE_MEASUREDATA, null, values);
         }
         database.setTransactionSuccessful();

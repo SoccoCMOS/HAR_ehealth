@@ -21,23 +21,27 @@ public class S_Processing extends IntentService {
         super("S_Processing");
     }
 
-    public static void startActionFeHar(Context context, long begin, long end) {
+
+
+    public static void startActionFeHar(Context context, long begin, long end, int wid) {
         Intent intent = new Intent(context, S_Processing.class);
         intent.setAction(ACTION_HAR);
         intent.putExtra("begin", begin);
-        intent.putExtra("end",end);
-        Log.d("onstartfehar","called start action fe har");
+        intent.putExtra("end", end);
+        Log.d("onstartfehar", "called start action fe har");
         // pass parameters here
+        intent.putExtra("wid",wid);
         context.startService(intent);
     }
 
-    public static void startActionFePhy(Context context, long begin, long end) {
+    public static void startActionFePhy(Context context, long begin, long end, int wid) {
         Intent intent = new Intent(context, S_Processing.class);
         intent.setAction(ACTION_PHYSIO);
         intent.putExtra("begin", begin);
         intent.putExtra("end", end);
         Log.d("onstartfephy","called start action fe physio");
         // pass parameters here
+        intent.putExtra("wid",wid);
         context.startService(intent);
     }
 
@@ -50,7 +54,7 @@ public class S_Processing extends IntentService {
         if(intent.getAction().equals(ACTION_HAR)) {
             List<Double[]> wd = WindowData.hardata;
             // Set cp window
-            C_Processing cp = new C_Processing(this);
+            C_Processing cp = new C_Processing(this,intent.getIntExtra("wid",0));
             cp.setWindow(wd);
 
             // Launch processWindow from cp
@@ -60,7 +64,7 @@ public class S_Processing extends IntentService {
             Double[] wd = new Double[WindowData.phydata.size()];
             for(int i=0; i<WindowData.phydata.size(); i++)
                 wd[i]=WindowData.phydata.get(i)[0];
-            ECGAnalysis ea=new ECGAnalysis(wd,this,begin,end);
+            ECGAnalysis ea=new ECGAnalysis(wd,this,begin,end,intent.getIntExtra("wid",0));
             ea.getECGFeatures();
         }
     }

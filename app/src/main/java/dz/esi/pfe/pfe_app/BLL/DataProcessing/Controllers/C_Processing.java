@@ -15,9 +15,11 @@ public class C_Processing {
     Context context;
     List<Double[]> window = new ArrayList<Double[]>();
     Double[][] fv;
+    int wid;
 
-    public C_Processing(Context context) {
+    public C_Processing(Context context, int wid) {
         this.context = context;
+        this.wid=wid;
     }
 
     public void setWindow(List<Double[]> w){
@@ -29,7 +31,7 @@ public class C_Processing {
         fv=new U_FeatureExtraction(this.context,window,ws,nm).applyFE();
 
         // Instancier une tâche de reconnaissance d'activité
-        ActivityRecognition activityRecognitionTask=new ActivityRecognition(fv,this.context,begin,finish);
+        ActivityRecognition activityRecognitionTask=new ActivityRecognition(fv,this.context,begin,finish,wid);
         activityRecognitionTask.getActivityByFeatures();
     }
 }

@@ -19,15 +19,17 @@ import dz.esi.pfe.pfe_app.R;
 public class MonitoringTest {
 
     public static Context context;
+    public static int compt=0;
 
     public static void testMonitoring()
     {
-        try {
-            Utilities.initialize(context);
-            Utilities.sessionconfig(context);
-        }
-        catch(SQLiteConstraintException e){
-            e.printStackTrace();
+        if(compt==0) {
+            try {
+                Utilities.initialize(context);
+                Utilities.sessionconfig(context);
+            } catch (SQLiteConstraintException e) {
+                e.printStackTrace();
+            }
         }
 
         // get window
@@ -42,12 +44,12 @@ public class MonitoringTest {
         WindowData.hardata=csvFile.ReadfromTo(0, 3000);
         Long begin=new java.util.Date().getTime();
         Long finish=begin+3000;
-        S_Processing.startActionFeHar(context,begin,finish);
+        S_Processing.startActionFeHar(context,begin,finish,compt);
         Log.d("beginhar", "" + begin);
         Log.d("finishhar",""+finish);
 
         WindowData.phydata=csvFile1.ReadfromTo(0,3000);
-        //Log.d("3002",""+WindowData.phydata.get(3000)[0]);
-        S_Processing.startActionFePhy(context, begin, begin+3000);
+        S_Processing.startActionFePhy(context, begin, finish,compt);
+        compt++;
     }
 }

@@ -1,6 +1,8 @@
 package dz.esi.pfe.pfe_app.BLL.DataProcessing.Controllers;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
@@ -32,12 +34,12 @@ import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
  * This class handles the patterns service provider call for activity recognition
  */
 public class ActivityRecognition {
-    static long count=0;
+    int wid;
     Context context;
     Double[][] featureVector;
     RequestQueue queue;
-    String url="http://192.168.0.18:8000/activity/";
-    String urlget="http://192.168.0.18:8000/activity/?param=no+param&tr=NP&p=1&wid="+count;
+    String url="http://192.168.1.6:8000/activity/";
+    String urlget="http://192.168.1.6:8000/activity/?param=no+param&tr=NP&p=1&wid=";
     Activity activity;
     Double np[][];
     ArrayList<Double> npb;
@@ -48,12 +50,14 @@ public class ActivityRecognition {
     long[] latency=new long[2];
     Date begin, finish;
 
-    public ActivityRecognition(Double[][] featureVector, Context c, Date begin, Date finish) {
+    public ActivityRecognition(Double[][] featureVector, Context c, Date begin, Date finish, int wid) {
         this.featureVector = featureVector;
         queue = Volley.newRequestQueue(c);
         context=c;
         this.begin=begin;
         this.finish=finish;
+        this.wid=wid;
+        urlget+=wid;
     }
 
     public void getActivityByFeatures()
@@ -88,11 +92,18 @@ public class ActivityRecognition {
                                                 activity = new Activity(classes[0]);
                                                 Log.d("activity",activity.getActivityLabel());
 
-                                                // Lancer une tâche d'écriture de l'activité en base de donnée
-                                                S_DataAccess.startActionInsert(context,"windowactivity",
-                                                        new WindowActivity(count,begin,finish,activity.getCodeActivity(),"socco"));
+                                                WindowActivity windowActivity=new WindowActivity(wid,begin,finish,activity.getCodeActivity(),"socco");
 
-                                                count++;
+                                                // Lancer une tâche d'écriture de l'activité en base de donnée
+                                                S_DataAccess.startActionInsert(context, "windowactivity",
+                                                        windowActivity);
+
+                                                Intent i = new Intent("ACTIVITY_RECEIVED");
+                                                Bundle bundle=new Bundle();
+                                                bundle.putSerializable("wa",windowActivity);
+                                                i.putExtra("wa",bundle);
+                                                context.sendBroadcast(i);
+
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
@@ -111,7 +122,7 @@ public class ActivityRecognition {
                                 protected Map<String, String> getParams()
                                 {
                                     Map<String, String>  params = new HashMap<String, String>();
-                                    params.put("wid", String.valueOf(count));
+                                    params.put("wid", String.valueOf(wid));
                                     params.put("tr", "C");
                                     params.put("p",String.valueOf(1));
                                     params.put("param", String.valueOf(npb));

@@ -28,17 +28,23 @@
         <service
             android:name=".BLL.DataProcessing.S_Processing"
             android:exported="false" />
-
         <service
             android:name=".BLL.DataProcessing.S_DecisionSupport"
             android:exported="false" />
-
         <service
             android:name=".DAL.S_DataAccess"
             android:exported="false" />
+        <service android:name="org.eclipse.paho.android.service.MqttService"></service>
 
-        <service android:name="org.eclipse.paho.android.service.MqttService" >
-        </service>
+        <receiver android:name=".BLL.Communication.ResultsReceiver"
+            class=".BLL.Communication.ResultsReceiver">
+            <intent-filter>
+                <action android:name="ACTIVITY_RECEIVED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="ECG_RECEIVED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

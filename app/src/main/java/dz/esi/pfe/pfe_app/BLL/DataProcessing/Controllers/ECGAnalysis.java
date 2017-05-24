@@ -1,6 +1,8 @@
 package dz.esi.pfe.pfe_app.BLL.DataProcessing.Controllers;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
@@ -8,7 +10,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
@@ -21,39 +22,36 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import dz.esi.pfe.pfe_app.BLL.DataProcessing.S_DecisionSupport;
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
-import dz.esi.pfe.pfe_app.DAL.DataAccessObjects.SQLite.DatabaseHelper;
-import dz.esi.pfe.pfe_app.DAL.Model.Activity;
 import dz.esi.pfe.pfe_app.DAL.Model.HeartRate;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
 import dz.esi.pfe.pfe_app.DAL.Model.RPeaks;
-import dz.esi.pfe.pfe_app.DAL.Model.WindowActivity;
 import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
 
 /**
  * Created by DUALCOMPUTER on 5/19/2017.
  */
 public class ECGAnalysis {
-    static long count=0;
+    static long count;
     static long count_hr=0, count_rp=0;
     Context context;
     Double[] data;
     // Add here ecg features
     RequestQueue queue;
-    String url="http://192.168.0.18:8000/ecg/";
+    String url="http://192.168.1.6:8000/ecg/";
     StringRequest request;
     Date begin,end;
+    int wid;
 
-    public ECGAnalysis(Double[] ecg, Context c, Date begin, Date end) {
+    public ECGAnalysis(Double[] ecg, Context c, Date begin, Date end, int wid) {
         data = ecg;
         queue = Volley.newRequestQueue(c);
         context=c;
         this.begin=begin;
         this.end=end;
+        this.wid=wid;
     }
 
     public void getECGFeatures(){
@@ -102,22 +100,27 @@ public class ECGAnalysis {
 
                             /// Writing the R peaks
                             ArrayList<RPeaks> rPeakses=new ArrayList<>();
+                            Double[] rpks=new Double[rpeaks.length];
                             for (int i=0; i<rpeaks.length; i++){
                                 time=begin.getTime()+Math.round(ts[rpeaks[i]]*1000);
                                 rPeakses.add(new RPeaks(count_rp, filtered[rpeaks[i]], new Date(time), "socco"));
                                 count_rp++;
+                                rpks[i]=ts[rpeaks[i]];
                             }
                             S_DataAccess.startActionInsert(context,"rpeakss",rPeakses);
 
                             ArrayList<Measure_Data> measure_datas=new ArrayList<>();
+                            Measure_Data md;
                             /// Writing the filtered signal
                             for (int i=0; i<filtered.length; i++){
                                 time=begin.getTime()+Math.round(ts[i] * 1000);
-                                measure_datas.add(new Measure_Data(count, "ECGL1", filtered[i], new Date(time), "socco"));
+                                md=new Measure_Data(count, "ECGL1", filtered[i], new Date(time), "socco");
+                                measure_datas.add(md);
+                                //Log.d("current", wid + "" + count);
                                 count++;
                             }
-                            WindowData.filtered_ecg=measure_datas;
-                            S_DataAccess.startActionInsert(context,"measuredatas",null);
+                            WindowData.filtered_ecg.put(wid,measure_datas);
+                            S_DataAccess.startActionInsert(context,"filteredecg",wid); //TODO: check SQL Unique constraint here
 
                             time=(begin.getTime()+end.getTime())/2;
                             hrate=0;
@@ -128,7 +131,14 @@ public class ECGAnalysis {
                                 hrate+=heart_rate[i];
                                 count_hr++;
                             }
-                            S_DecisionSupport.startActionCheckHR(context, new HeartRate(count_hr,hrate/heart_rate.length,new Date(time),"socco"));
+                            Intent i = new Intent("ECG_RECEIVED");
+                            Bundle bundle=new Bundle();
+                            bundle.putSerializable("hr",new HeartRate(wid,hrate/heart_rate.length,new Date(time),"socco"));
+                            bundle.putSerializable("rpeaks",rpks);
+                            i.putExtra("phy",bundle);
+                            context.sendBroadcast(i);
+
+                            //S_DecisionSupport.startActionCheckHR(context, new HeartRate(count_hr,hrate/heart_rate.length,new Date(time),"socco"));
 
                         } catch (JSONException e) {
                             e.printStackTrace();

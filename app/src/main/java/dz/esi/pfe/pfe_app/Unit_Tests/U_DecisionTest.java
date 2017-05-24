@@ -41,6 +41,29 @@ public class U_DecisionTest {
         Log.d("DecisionRules", String.valueOf(U_DecisionRules.interprete_whr(70.0, 42.0).getDetails()));
 
         Log.d("DecisionRules", String.valueOf(U_DecisionRules.interprete_hr(100.0, 1, 23, Gender.Female).getDetails()));
-        Log.d("DecisionRules", String.valueOf(U_DecisionRules.interprete_hr(50.0,3,13,Gender.Male).getDetails()));
+        Log.d("DecisionRules", String.valueOf(U_DecisionRules.interprete_hr(50.0, 3, 13, Gender.Male).getDetails()));
+    }
+
+    public static void test_RR_Rules()
+    {
+        U_DecisionRules.load_knowledge();
+        //Log.d("DecisionRules", U_DecisionRules.interprete_rrreg(new double[]{308, 1008, 1708, 2408}).getDetails());
+        //Log.d("DecisionRules", U_DecisionRules.interprete_rrreg(new double[]{308, 1008, 1206, 1653}).getDetails());
+        //Log.d("DecisionRules",U_DecisionRules.interprete_rrreg(new double[]{308, 588, 788, 900}).getDetails());
+
+        Log.d("DecisionRules", U_DecisionRules.detect_arythmia(0, 0).getDetails() + " " + U_DecisionRules.detect_arythmia(0, 0).getNormal());
+        Log.d("DecisionRules", U_DecisionRules.detect_arythmia(0, 1).getDetails() + " " + U_DecisionRules.detect_arythmia(0, 1).getNormal());
+        Log.d("DecisionRules", U_DecisionRules.detect_arythmia(0, 2).getDetails() + " " + U_DecisionRules.detect_arythmia(0,2).getNormal());
+        Log.d("DecisionRules", U_DecisionRules.detect_arythmia(1, 0).getDetails() + " " + U_DecisionRules.detect_arythmia(1,0).getNormal());
+        Log.d("DecisionRules", U_DecisionRules.detect_arythmia(1, 1).getDetails() + " " + U_DecisionRules.detect_arythmia(1,1).getNormal());
+        Log.d("DecisionRules", U_DecisionRules.detect_arythmia(1, 2).getDetails() + " " + U_DecisionRules.detect_arythmia(1,2).getNormal());
+
+
+        Log.d("DecisionRules", U_DecisionRules.interprete_rr(0.2).getDetails() + " " + U_DecisionRules.interprete_rr(0.2).getNormal());
+        Log.d("DecisionRules",U_DecisionRules.interprete_rr(0.5).getDetails() + " " + U_DecisionRules.interprete_rr(0.5).getNormal());
+        //Log.d("DecisionRules",U_DecisionRules.interprete_rr(1).getDetails() + " " + U_DecisionRules.interprete_rr(1).getNormal());
+        //Log.d("DecisionRules",U_DecisionRules.interprete_rr(2).getDetails() + " " + U_DecisionRules.interprete_rr(2).getNormal());
+
+
     }
 }

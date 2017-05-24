@@ -137,4 +137,51 @@
         </data>
 
     </category>
+
+    <category name="cardio">
+        <date name="rr" values="continu" type="standalone">
+            <rules>
+                <intervalle sup="0.42">Court</intervalle>
+                <intervalle sup="0.42" inf="0.6">Normal Court</intervalle>
+                <intervalle sup="0.6" inf="1.2">Normal</intervalle>
+                <intervalle inf="1.2">Prolongé</intervalle>
+            </rules>
+        </date>
+
+        <date name="rrreg" values="continu" type="standalone">
+            <rules>
+                <intervalle sup="0">Irrégulier négatif</intervalle>
+                <intervalle inf="0" sup="0">Régulier</intervalle>
+                <intervalle inf="0">Irrégulier positif</intervalle>
+            </rules>
+        </date>
+
+        <date name="hrdiff" values="continu" type="standalone">
+            <rules>
+                <intervalle sup="10">Tolérée</intervalle>
+                <intervalle inf="10">Phlébite</intervalle>
+            </rules>
+        </date>
+
+        <date name="vagalindex" values="continu" type="combined" var="general.age">
+            <rules>
+                <intervalle sup="20">35</intervalle>
+                <intervalle sup="20" inf="50">30</intervalle>
+                <intervalle inf="50" sup="60">25</intervalle>
+                <intervalle inf="60" sup="70">20</intervalle>
+                <intervalle inf="70" sup="100">15</intervalle>
+            </rules>
+        </date>
+
+        <date name="rythme" values="classe" type="combined" var="vital.rhr">
+            <rules>
+                <classe name="Régulier" rhr="Normal">Sinus</classe>
+                <classe name="Régulier" rhr="Bradycardie">Sinus Bradycardie</classe>
+                <classe name="Régulier" rhr="Tachycardie">Sinus Tachycardie</classe>
+                <classe name="Irrégulier" rhr="Normal">Arythmie</classe>
+                <classe name="Irrégulier" rhr="Bradycardie">Bradyarythmie</classe>
+                <classe name="Irrégulier" rhr="Tachycardie">Tachyarythmie</classe>
+            </rules>
+        </date>
+    </category>
 </resources>

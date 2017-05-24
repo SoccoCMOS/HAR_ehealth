@@ -99,7 +99,7 @@ public class S_DataAccess extends IntentService {
             }
             else if (ACTION_ACTIVITY.equals(action)){
                 HeartRate hr=(HeartRate)intent.getExtras().getBundle("hr").getSerializable("hr");
-                handleActionActivity(hr);
+                //handleActionActivity(hr);
             }
             else {
                 // call function that handles it
@@ -108,13 +108,13 @@ public class S_DataAccess extends IntentService {
         }
     }
 
-    private void handleActionActivity(HeartRate hr) {
-        DatabaseHelper db=new DatabaseHelper(this,"owldb",null,1);
-        Activity a=db.getActivityByInstant(hr.getTimestamp());
-        S_DecisionSupport.startActionCallback(this,hr,Integer.valueOf(a.getCodeActivity()));
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
-        Log.d("activity","activity of instant"+sdfDate.format(hr.getTimestamp())+" = "+a.getActivityLabel());
-    }
+//    private void handleActionActivity(HeartRate hr) {
+//        DatabaseHelper db=new DatabaseHelper(this,"owldb",null,1);
+//        Activity a=db.getActivityByInstant(hr.getTimestamp());
+//        S_DecisionSupport.startActionCallback(this,hr,Integer.valueOf(a.getCodeActivity()));
+//        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS");
+//        Log.d("activity","activity of instant"+sdfDate.format(hr.getTimestamp())+" = "+a.getActivityLabel());
+//    }
 
     private void handleActionCreate() {
         DatabaseHelper db=new DatabaseHelper(this,"owldb",null,1);
@@ -144,11 +144,16 @@ public class S_DataAccess extends IntentService {
         else if(table.equals("heartrate")) {
             db.insertHeartrate((HeartRate) data);
         }
-        else if (table.equals(("measuredatas"))){
-            db.insertMeasureDatas(WindowData.filtered_ecg);
+        else if (table.equals(("filteredecg"))){
+            ArrayList<Measure_Data> md=WindowData.filtered_ecg.get(data);
+            db.insertMeasureDatas(md);
+            WindowData.filtered_ecg.remove(data);
         }
         else if(table.equals("rpeakss")){
             db.insertRPeaks((ArrayList<RPeaks>)data);
+        }
+        else if(table.equals("measuredatas")){
+            //db.insertMeasureDatas((ArrayList<Measure_Data>)WindowData.hardata);
         }
         else throw new UnsupportedOperationException("Table not yet created");
     }
