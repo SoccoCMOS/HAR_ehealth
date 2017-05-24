@@ -81,42 +81,38 @@ public class S_DecisionSupport extends IntentService {
                 Double[] rpks=(Double[]) intent.getExtras().getBundle("phy").get("rpeaks");
                 int codeact=intent.getIntExtra("codeact", 0);
 
-                Log.d("ICIhr",""+hr.getValue());
-                Log.d("ICIactivity",""+codeact);
-                Log.d("ICIrpks", ""+rpks[0]+ " " + rpks[1] + "  " + rpks[2] + "  " + rpks[3]);
-
-                Interpretation interpretation[] = U_DecisionRules.interprete_all(hr.getValue(), codeact, 23, Gender.Female, rpks);
+                Interpretation interpretation[] = U_DecisionRules.interprete_all_rr(hr.getValue(), codeact, 23, Gender.Female, rpks);
 //                /**********  Heart-Rate vs activity, age, gender interpretation  **********/
-//                if(!interpretation[0].getNormal()) {
-//                    //  Call notification service of the phone */
-//                    NotificationCompat.Builder mBuilder =
-//                            new NotificationCompat.Builder(this)
-//                                    .setSmallIcon(R.drawable.notification_icon)
-//                                    .setContentTitle("Window " + hr.getId())
-//                                    .setContentText("Fréquence cardiaque " + Math.round(hr.getValue()) + " : " + interpretation[0].getDetails());
+                if(!interpretation[0].getNormal()) {
+                    //  Call notification service of the phone */
+                    NotificationCompat.Builder mBuilder =
+                            new NotificationCompat.Builder(this)
+                                    .setSmallIcon(R.drawable.notification_icon)
+                                    .setContentTitle("Window " + hr.getId())
+                                    .setContentText("Fréquence cardiaque: " + Math.round(hr.getValue()) + ", Activité: " + new Activity(codeact).getActivityLabel());
+
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    // mId allows you to update the notification later on.
+                    mNotificationManager.notify(anomalies, mBuilder.build());
+                    anomalies++;
+                }
 //
-//                    NotificationManager mNotificationManager =
-//                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//                    // mId allows you to update the notification later on.
-//                    mNotificationManager.notify(anomalies, mBuilder.build());
-//                    anomalies++;
-//                }
-//
-//                /**********  R Peaks standalone interpretation  **********/
-//                if(!interpretation[1].getNormal()) {
-//                    //  Call notification service of the phone */
-//                    NotificationCompat.Builder mBuilder =
-//                            new NotificationCompat.Builder(this)
-//                                    .setSmallIcon(R.drawable.notification_icon)
-//                                    .setContentTitle("Window "+hr.getId())
-//                                    .setContentText("Intervalles R-R: " + interpretation[1].getDetails());
-//
-//                    NotificationManager mNotificationManager =
-//                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//                    // mId allows you to update the notification later on.
-//                    mNotificationManager.notify(anomalies, mBuilder.build());
-//                    anomalies++;
-//                }
+//                *//**********  R Peaks standalone interpretation  **********//*
+                if(!interpretation[1].getNormal()) {
+                    //  Call notification service of the phone *//*
+                    NotificationCompat.Builder mBuilder =
+                            new NotificationCompat.Builder(this)
+                                    .setSmallIcon(R.drawable.notification_icon)
+                                    .setContentTitle("Window "+hr.getId())
+                                    .setContentText("Intervalles R-R: " + interpretation[1].getDetails());
+
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    // mId allows you to update the notification later on.
+                    mNotificationManager.notify(anomalies, mBuilder.build());
+                    anomalies++;
+                }
 
                 /**********   Rythm variability ***************/
                 if(!interpretation[2].getNormal()) {
@@ -125,7 +121,7 @@ public class S_DecisionSupport extends IntentService {
                             new NotificationCompat.Builder(this)
                                     .setSmallIcon(R.drawable.notification_icon)
                                     .setContentTitle("Window "+hr.getId())
-                                    .setContentText("Variabilité du rythme : " + interpretation[2].getDetails());
+                                    .setContentText("Rythme : " + interpretation[2].getDetails());
 
                     NotificationManager mNotificationManager =
                             (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

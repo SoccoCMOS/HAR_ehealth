@@ -127,55 +127,6 @@ public class U_DecisionRules {
         rythmias=new String[]{"Sinus Bradycardie","Sinus Normal","Sinus Tachycardie"};
     }
 
-                /***************   Holistic interpretation *********************/
-    public static Interpretation[] interprete_all(Double hr, int codeAct, int age, Gender g, Double rpks[]){
-        Interpretation[] interpretations=new Interpretation[4];
-                            /*** Interpreting heart rate vs age, gender, activity ***/
-        interpretations[0]=interprete_hr(hr, codeAct, age, g);
-
-                            /*** Interpreting R-R intervals size ***/
-        Double[] rr_intervals=process_rrintervals(rpks);
-        boolean rr_sizes_normal=true;
-        String details="";
-        Interpretation inter;
-        for(int i=0; i<rr_intervals.length; i++){
-            inter=interprete_rr(rr_intervals[i]);
-            rr_sizes_normal=rr_sizes_normal&inter.getNormal();
-            details+=inter.getDetails()+" ";
-        }
-        interpretations[1]=new Interpretation(rr_sizes_normal,details);
-
-                        /*** Interpreting rythm variability ***/
-        interpretations[2]=interprete_rreg(rr_intervals);
-
-                        /*** Detecting arythmias ***/
-        if(interpretations[0].equals(hr_cases[0]) || interpretations[0].equals(ahr_cases[0])){
-            if(interpretations[2].equals("Régulier")) {
-                interpretations[3]=detect_arythmia(0,0);
-            }
-            else{
-                interpretations[3]=detect_arythmia(1,0);
-            }
-        }
-        else if(interpretations[0].equals(hr_cases[1]) || interpretations[0].equals(ahr_cases[1])){
-            if(interpretations[2].equals("Régulier")) {
-                interpretations[3]=detect_arythmia(0,1);
-            }
-            else{
-                interpretations[3]=detect_arythmia(1,1);
-            }
-        }
-        else {
-            if(interpretations[2].equals("Régulier")) {
-                interpretations[3]=detect_arythmia(0,2);
-            }
-            else{
-                interpretations[3]=detect_arythmia(1,2);
-            }
-        }
-        return interpretations;
-    }
-
                     /************* Interpreting Heart Rate *******************/
     public static Interpretation interprete_hr(Double heartrate, int codeAct, int age, Gender g){
         if(getIntensitéActivité(codeAct).equals("Repos") || codeAct==0)
@@ -224,7 +175,120 @@ public class U_DecisionRules {
         return interpretation;
     }
 
-                    /************ Interpreting R-R Intervals  ******************/
+    public static Interpretation checkVariability(Double[] hr){
+        Interpretation interpretation=new Interpretation();
+        boolean constant=true;
+
+        for(int i=0; i<hr.length-1; i++){
+            constant=((hr[i+1]-hr[i])==0);
+            if(!constant) return new Interpretation(false,"Irrégulier");
+        }
+
+        return new Interpretation(true,"Régulier");
+    }
+
+    public static Interpretation check_arythmia(int categ_rrreg,int categ_hr){
+        Interpretation interpretation=new Interpretation();
+        if(categ_rrreg==0)
+        {
+            interpretation.setDetails(rythmias[categ_hr]);
+            if(categ_hr!=hr_normal) interpretation.setNormal(false);
+        }
+        else if(categ_rrreg==1)
+        {
+            interpretation.setDetails(arythmias[categ_hr]);
+            interpretation.setNormal(false);
+        }
+        return interpretation;
+    }
+
+    public static Interpretation[] interprete_all_hr(Double hr, int codeAct, int age, Gender g, Double hrs[]){
+        Interpretation[] interpretations=new Interpretation[4];
+        /*** Interpreting heart rate vs age, gender, activity ***/
+        interpretations[0]=interprete_hr(hr, codeAct, age, g);
+        /*** Interpreting variability ***/
+        interpretations[1]=checkVariability(hrs);
+
+        /*** Detecting arythmias ***/
+        if(interpretations[0].equals(hr_cases[0]) || interpretations[0].equals(ahr_cases[0])){
+            if(interpretations[1].equals("Régulier")) {
+                interpretations[2]=detect_arythmia(0,0);
+            }
+            else{
+                interpretations[2]=detect_arythmia(1,0);
+            }
+        }
+        else if(interpretations[0].equals(hr_cases[1]) || interpretations[0].equals(ahr_cases[1])){
+            if(interpretations[1].equals("Régulier")) {
+                interpretations[2]=detect_arythmia(0,1);
+            }
+            else{
+                interpretations[2]=detect_arythmia(1,1);
+            }
+        }
+        else {
+            if(interpretations[1].equals("Régulier")) {
+                interpretations[2]=detect_arythmia(0,2);
+            }
+            else{
+                interpretations[2]=detect_arythmia(1,2);
+            }
+        }
+        return interpretations;
+
+    }
+
+                    /************ Interpreting R-R Intervals ******************/
+
+    /***************   Holistic interpretation *********************/
+    public static Interpretation[] interprete_all_rr(Double hr, int codeAct, int age, Gender g, Double rpks[]){
+        Interpretation[] interpretations=new Interpretation[4];
+        /*** Interpreting heart rate vs age, gender, activity ***/
+        interpretations[0]=interprete_hr(hr, codeAct, age, g);
+
+        /*** Interpreting R-R intervals size ***/
+        Double[] rr_intervals=process_rrintervals(rpks);
+        boolean rr_sizes_normal=true;
+        String details="";
+        Interpretation inter;
+        for(int i=0; i<rr_intervals.length; i++){
+            inter=interprete_rr(rr_intervals[i]);
+            rr_sizes_normal=rr_sizes_normal&inter.getNormal();
+            details+=inter.getDetails()+" ";
+        }
+        interpretations[1]=new Interpretation(rr_sizes_normal,details);
+
+        /*** Interpreting rythm variability ***/
+        interpretations[2]=interprete_rreg(rr_intervals);
+
+        /*** Detecting arythmias ***/
+        if(interpretations[0].equals(hr_cases[0]) || interpretations[0].equals(ahr_cases[0])){
+            if(interpretations[2].equals("Régulier")) {
+                interpretations[3]=detect_arythmia(0,0);
+            }
+            else{
+                interpretations[3]=detect_arythmia(1,0);
+            }
+        }
+        else if(interpretations[0].equals(hr_cases[1]) || interpretations[0].equals(ahr_cases[1])){
+            if(interpretations[2].equals("Régulier")) {
+                interpretations[3]=detect_arythmia(0,1);
+            }
+            else{
+                interpretations[3]=detect_arythmia(1,1);
+            }
+        }
+        else {
+            if(interpretations[2].equals("Régulier")) {
+                interpretations[3]=detect_arythmia(0,2);
+            }
+            else{
+                interpretations[3]=detect_arythmia(1,2);
+            }
+        }
+        return interpretations;
+    }
+
     public static Interpretation interprete_rr(Double rr){
         Interpretation interpretation=new Interpretation();
         int i;
