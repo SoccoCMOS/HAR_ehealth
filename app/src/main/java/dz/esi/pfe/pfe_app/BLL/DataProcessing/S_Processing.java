@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Controllers.C_Processing;
@@ -16,32 +17,31 @@ public class S_Processing extends IntentService {
 
     private static final String ACTION_HAR = "fehar" ;
     private static final String ACTION_PHYSIO = "fephy";
+    private static final long wid=0;
 
     public S_Processing() {
         super("S_Processing");
     }
 
-
-
-    public static void startActionFeHar(Context context, long begin, long end, int wid) {
+    public static void startActionFeHar(Context context, long begin, long end, long wid) {
         Intent intent = new Intent(context, S_Processing.class);
         intent.setAction(ACTION_HAR);
         intent.putExtra("begin", begin);
-        intent.putExtra("end", end);
+        intent.putExtra("end",end);
+        intent.putExtra("wid", wid);
         Log.d("onstartfehar", "called start action fe har");
         // pass parameters here
-        intent.putExtra("wid",wid);
         context.startService(intent);
     }
 
-    public static void startActionFePhy(Context context, long begin, long end, int wid) {
+    public static void startActionFePhy(Context context, long begin, long end, Long wid) {
         Intent intent = new Intent(context, S_Processing.class);
         intent.setAction(ACTION_PHYSIO);
         intent.putExtra("begin", begin);
         intent.putExtra("end", end);
-        Log.d("onstartfephy","called start action fe physio");
+        intent.putExtra("wid", wid);
+        Log.d("onstartfephy", "called start action fe physio");
         // pass parameters here
-        intent.putExtra("wid",wid);
         context.startService(intent);
     }
 
@@ -50,25 +50,31 @@ public class S_Processing extends IntentService {
         Log.d("sv","started service"+intent.getAction());
         Date begin=new Date(intent.getLongExtra("begin",0));
         Date end=new Date(intent.getLongExtra("end",0));
+        Long wid=intent.getLongExtra("wid",0);
 
         if(intent.getAction().equals(ACTION_HAR)) {
-            List<Double[]> wd = WindowData.hardata;
-            // Set cp window
-            C_Processing cp = new C_Processing(this,intent.getIntExtra("wid",0));
-            cp.setWindow(wd);
 
+            List<Double[]> wd = WindowData.hhardata.get(wid);
+            Log.d("ZMAR","" + (WindowData.hhardata==null) + "  " + (WindowData.hhardata.get(wid)==null));
+            // Set cp window
+
+            C_Processing cp = new C_Processing(this,wid);
+            cp.setWindow(wd);
+            // WindowData.hardata.clear();
             // Launch processWindow from cp
+            Log.d("Zmar2",""+ (wd==null));
             cp.processWindow(wd.size(), wd.get(0).length,begin,end);
+
         }
         else if (intent.getAction().equals(ACTION_PHYSIO)){
-            Double[] wd = new Double[WindowData.phydata.size()];
-            for(int i=0; i<WindowData.phydata.size(); i++)
-                wd[i]=WindowData.phydata.get(i)[0];
-            ECGAnalysis ea=new ECGAnalysis(wd,this,begin,end,intent.getIntExtra("wid",0));
+            int sz=WindowData.hphydata.get(wid).get(0).length;
+            Double[] wd = new Double[sz];
+            for(int i=0; i<sz; i++)
+                wd[i]= WindowData.hphydata.get(wid).get(0)[i];
+            ECGAnalysis ea=new ECGAnalysis(wd,this,begin,end,wid);
             ea.getECGFeatures();
         }
     }
-
 
 
     @Override

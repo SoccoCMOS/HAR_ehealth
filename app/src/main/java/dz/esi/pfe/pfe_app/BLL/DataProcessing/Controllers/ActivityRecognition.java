@@ -34,12 +34,12 @@ import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
  * This class handles the patterns service provider call for activity recognition
  */
 public class ActivityRecognition {
-    int wid;
+    Long wid;
     Context context;
     Double[][] featureVector;
     RequestQueue queue;
-    String url="http://192.168.1.6:8000/activity/";
-    String urlget="http://192.168.1.6:8000/activity/?param=no+param&tr=NP&p=1&wid=";
+    String url="http://192.168.43.79:8000/activity/";
+    String urlget="http://192.168.43.79:8000/activity/?param=no+param&tr=NP&p=1&wid=";
     Activity activity;
     Double np[][];
     ArrayList<Double> npb;
@@ -50,7 +50,7 @@ public class ActivityRecognition {
     long[] latency=new long[2];
     Date begin, finish;
 
-    public ActivityRecognition(Double[][] featureVector, Context c, Date begin, Date finish, int wid) {
+    public ActivityRecognition(Double[][] featureVector, Context c, Date begin, Date finish, Long wid) {
         this.featureVector = featureVector;
         queue = Volley.newRequestQueue(c);
         context=c;
@@ -72,8 +72,10 @@ public class ActivityRecognition {
                             Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
                             np =    gsonPretty.fromJson(ja, Double[][].class);
                             Log.d("np first and last",""+np[0][0]+"  "+np[125][83]);
+                            Log.d("fv first and last",""+featureVector[0][0]+"  "+featureVector[83][0]);
                             b= U_Matrix.norm(featureVector);
-                            Log.d("b first and last",""+b[0][0]+"  "+b[83][0]);
+                            Log.d("b",""+ String.valueOf(b));
+                            Log.d("bdimensions", b.length + " " + b[0].length);
                             npb = U_Matrix.multiply(np, b);
                             Log.d("npb first and last",""+npb.get(0)+"  "+npb.get(125));
                             Log.d("npb dimensions : " , String.valueOf(npb.size()));

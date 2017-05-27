@@ -234,7 +234,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(LABEL, mt.getLabel());
 
         // insert row
-        long row_id = db.insert(TABLE_MEASURETYPE, null, values);
+        long row_id = db.insertWithOnConflict(TABLE_MEASURETYPE, null, values,SQLiteDatabase.CONFLICT_IGNORE);
         return row_id;
     }
 
@@ -248,7 +248,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(CODEACTIVITY,w.getCodeActivity());
         values.put(USERID, w.getUserID());
 
-        long row_id= db.insert(TABLE_WINDOWACTIVITY,null,values);
+        long row_id= db.insertWithOnConflict(TABLE_WINDOWACTIVITY,null,values,SQLiteDatabase.CONFLICT_IGNORE);
         return row_id;
     }
 
@@ -263,7 +263,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(CODESENS,c.getCodeSens());
         values.put(USERID, c.getUserID());
 
-        long row_id= db.insert(TABLE_CONNEXION,null,values);
+        long row_id= db.insertWithOnConflict(TABLE_CONNEXION,null,values,SQLiteDatabase.CONFLICT_IGNORE);
         return row_id;
     }
 
@@ -277,7 +277,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(CODESENS, md.getCodeSens());
         values.put(USERID, md.getUserID());
 
-        long row_id= db.insert(TABLE_MEASUREDATA,null,values);
+        long row_id= db.insertWithOnConflict(TABLE_MEASUREDATA,null,values,SQLiteDatabase.CONFLICT_IGNORE);
         return row_id;
     }
 
@@ -289,7 +289,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TIMESTAMP, md.getTimestamp().toString());
         values.put(USERID, md.getUserID());
 
-        long row_id= db.insert(TABLE_RPEAKS,null,values);
+        long row_id= db.insertWithOnConflict(TABLE_RPEAKS,null,values,SQLiteDatabase.CONFLICT_IGNORE);
         return row_id;
     }
 
@@ -301,7 +301,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(TIMESTAMP, md.getTimestamp().toString());
         values.put(USERID, md.getUserID());
 
-        long row_id= db.insert(TABLE_HEARTRATE,null,values);
+        long row_id= db.insertWithOnConflict(TABLE_HEARTRATE,null,values,SQLiteDatabase.CONFLICT_IGNORE);
         return row_id;
     }
 
@@ -316,7 +316,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(WAIST,f.getWaist());
         values.put(USERID, f.getUserID());
 
-        long row_id= db.insert(TABLE_FITNESSMEASURE,null,values);
+        long row_id= db.insertWithOnConflict(TABLE_FITNESSMEASURE,null,values,SQLiteDatabase.CONFLICT_IGNORE);
         return row_id;
     }
 
@@ -532,7 +532,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("CodeActivity", queryValues.getCodeActivity());
         values.put("ActivityLabel",queryValues.getActivityLabel());
-        database.insert("activity", null, values);
+        database.insertWithOnConflict("activity", null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -549,7 +549,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(FREQUENCY,queryValues.getFrequency());
         values.put(CODESENS,queryValues.getCodeSens());
         values.put(USERID,queryValues.getUserID());
-        database.insert("connexion", null, values);
+        database.insertWithOnConflict("connexion", null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -563,7 +563,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(USERID, queryValues.getUserID());
         values.put(EMAIL,queryValues.getEmail());
         values.put(PASSWORD,queryValues.getPassword_hash());
-        database.insert("account", null, values);
+        database.insertWithOnConflict("account", null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -579,7 +579,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(GENDER,queryValues.getGender().toString());
         values.put(NAME,queryValues.getName());
         values.put(USERID,queryValues.getUserID());
-        database.insert("user", null, values);
+        database.insertWithOnConflict("user", null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -593,7 +593,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(UNIT, queryValues.getUnit());
         values.put(CODESENS,queryValues.getCodeSens());
         values.put(LABEL,queryValues.getLabel());
-        database.insert("measuretype", null, values);
+        database.insertWithOnConflict("measuretype", null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -609,7 +609,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(VALUE,queryValues.getValue());
         values.put(TIMESTAMP,String.valueOf(queryValues.getTimestamp()));
         values.put(USERID,queryValues.getUserID());
-        database.insert("measuredata", null, values);
+        database.insertWithOnConflict("measuredata", null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -624,7 +624,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(VALUE,queryValues.getValue());
         values.put(TIMESTAMP,String.valueOf(queryValues.getTimestamp()));
         values.put(USERID,queryValues.getUserID());
-        database.insert(TABLE_RPEAKS, null, values);
+        database.insertWithOnConflict(TABLE_RPEAKS, null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -637,7 +637,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(VALUE, queryValues.get(i).getValue());
             values.put(TIMESTAMP, String.valueOf(queryValues.get(i).getTimestamp()));
             values.put(USERID, queryValues.get(i).getUserID());
-            database.insert(TABLE_RPEAKS, null, values);
+            database.insertWithOnConflict(TABLE_RPEAKS, null, values,SQLiteDatabase.CONFLICT_IGNORE);
         }
         database.setTransactionSuccessful();
         database.endTransaction();
@@ -655,7 +655,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(TIMESTAMP,String.valueOf(queryValues.get(i).getTimestamp()));
             values.put(USERID,queryValues.get(i).getUserID());
             //Log.d("insertingid",String.valueOf(queryValues.get(i).getId()));
-            database.insert(TABLE_MEASUREDATA, null, values);
+            database.insertWithOnConflict(TABLE_MEASUREDATA, null, values,SQLiteDatabase.CONFLICT_IGNORE);
         }
         database.setTransactionSuccessful();
         database.endTransaction();
@@ -673,7 +673,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(VALUE,queryValues.getValue());
         values.put(TIMESTAMP,String.valueOf(queryValues.getTimestamp()));
         values.put(USERID,queryValues.getUserID());
-        database.insert(TABLE_HEARTRATE, null, values);
+        database.insertWithOnConflict(TABLE_HEARTRATE, null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -686,7 +686,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(HEIGHT,queryValues.getHeight());
         values.put(DATE, String.valueOf(queryValues.getDateUpdate()));
         values.put(USERID,queryValues.getUserID());
-        database.insert("fitnessmeasure", null, values);
+        database.insertWithOnConflict("fitnessmeasure", null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 
@@ -702,7 +702,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(FINISH, sdfDate.format(queryValues.getFinish()));
         //Log.d("finish", sdfDate.format(queryValues.getFinish()));
         values.put(USERID,queryValues.getUserID());
-        database.insert("windowactivity", null, values);
+        database.insertWithOnConflict("windowactivity", null, values,SQLiteDatabase.CONFLICT_IGNORE);
         database.close();
     }
 

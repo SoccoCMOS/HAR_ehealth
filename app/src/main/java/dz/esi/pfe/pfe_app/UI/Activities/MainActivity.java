@@ -47,15 +47,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         receiver=new ResultsReceiver();
 
 //        String topics[]=new String[]{
@@ -69,9 +60,8 @@ public class MainActivity extends AppCompatActivity {
 //            subclient.subscribe();
 //        }
 
-        MonitoringTest.context=this;
-        U_DecisionRules.load_knowledge();
-        MonitoringTest.testMonitoring();
+        MQTT_Test.context=this;
+        MQTT_Test.MQTT_test();
 
         //U_DecisionTest.context=this;
         //U_DecisionTest.test_RR_Rules();
@@ -120,5 +110,10 @@ public class MainActivity extends AppCompatActivity {
             unregisterReceiver(receiver);
             receiverRegistered = false;
         }
+    }
+
+    public void launch(View view) {
+        Intent intent=new Intent(this,DashboardActivity.class);
+        startActivity(intent);
     }
 }

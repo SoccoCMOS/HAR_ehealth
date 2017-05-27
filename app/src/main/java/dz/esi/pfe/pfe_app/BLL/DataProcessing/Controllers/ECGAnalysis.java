@@ -40,12 +40,12 @@ public class ECGAnalysis {
     Double[] data;
     // Add here ecg features
     RequestQueue queue;
-    String url="http://192.168.1.6:8000/ecg/";
+    String url="http://192.168.43.79:8000/ecg/";
     StringRequest request;
     Date begin,end;
-    int wid;
+    Long wid;
 
-    public ECGAnalysis(Double[] ecg, Context c, Date begin, Date end, int wid) {
+    public ECGAnalysis(Double[] ecg, Context c, Date begin, Date end, Long wid) {
         data = ecg;
         queue = Volley.newRequestQueue(c);
         context=c;

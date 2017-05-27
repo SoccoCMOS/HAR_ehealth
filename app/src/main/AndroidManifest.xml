@@ -8,6 +8,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -26,6 +31,10 @@
         </activity>
 
         <service
+            android:name=".BLL.Communication.C_Communication"
+            android:exported="false" />
+
+        <service
             android:name=".BLL.DataProcessing.S_Processing"
             android:exported="false" />
         <service
@@ -34,9 +43,10 @@
         <service
             android:name=".DAL.S_DataAccess"
             android:exported="false" />
-        <service android:name="org.eclipse.paho.android.service.MqttService"></service>
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
 
-        <receiver android:name=".BLL.Communication.ResultsReceiver"
+        <receiver
+            android:name=".BLL.Communication.ResultsReceiver"
             class=".BLL.Communication.ResultsReceiver">
             <intent-filter>
                 <action android:name="ACTIVITY_RECEIVED" />
@@ -45,6 +55,9 @@
                 <action android:name="ECG_RECEIVED" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".UI.Activities.DashboardActivity" />
+
     </application>
 
 </manifest>

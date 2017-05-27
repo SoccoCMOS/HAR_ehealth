@@ -1,13 +1,13 @@
 package dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities;
 
 
-        import android.content.Context;
-        import java.util.Arrays;
-        import java.util.List;
-        import java.io.InputStream;
-        import java.util.ArrayList;
+import android.content.Context;
+import java.util.Arrays;
+import java.util.List;
+import java.io.InputStream;
+import java.util.ArrayList;
 
-        import dz.esi.pfe.pfe_app.R;
+import dz.esi.pfe.pfe_app.R;
 
 public class U_FeatureExtraction {
 
@@ -26,12 +26,12 @@ public class U_FeatureExtraction {
         featureVector=new Double[nm*4][1];
     }
 
-
     public Double[][] applyFE() {
         mean=mean(window, nm);
-        mad=mad(window, nm);
-        rms=rms(window, nm);
         sd=sd(window, nm);
+        rms=rms(window, nm);
+        mad=mad(window, nm);
+
         return featureVector;
     }
 
@@ -41,10 +41,10 @@ public class U_FeatureExtraction {
         Double[] result = new Double[size_line];
         Arrays.fill(result, 0.0);
         for (int i = 0; i < size_line; i++) {
-            for (int j = 0; j < window.size(); j++) {
-                result[i] = result[i] + window.get(j)[i];
+            for (int j = 0; j < ws; j++) {
+                result[i] = result[i] + window.get(i)[j];
             }
-            result[i] = result[i] / window.size();
+            result[i] = result[i] / ws;
             featureVector[i][0]=result[i];
         }
         return result;
@@ -58,11 +58,11 @@ public class U_FeatureExtraction {
         Double[] result1 = new Double[size_line];
         Arrays.fill(result1, 0.0);
         for (int i = 0; i < size_line; i++) {
-            for (int j = 0; j < window.size(); j++) {
-                result1[i] = result1[i] + Math.abs((window.get(j)[i] - mean[i]));
+            for (int j = 0; j < ws; j++) {
+                result1[i] = result1[i] + Math.abs((window.get(i)[j] - mean[i]));
             }
-            result[i] = Math.sqrt(result1[i] / (window.size() - 1));
-            featureVector[nm+i][0]=result[i];
+            result[i] = Math.sqrt(result1[i] / (ws - 1));
+            featureVector[nm*3+i][0]=result[i];
         }
 
         return result;
@@ -74,10 +74,10 @@ public class U_FeatureExtraction {
         Arrays.fill(result, 0.0);
 
         for (int i = 0; i < size_line; i++) {
-            for (int j = 0; j < window.size(); j++) {
-                result[i] = result[i] + Math.pow(window.get(j)[i], 2);
+            for (int j = 0; j < ws; j++) {
+                result[i] = result[i] + Math.pow(window.get(i)[j], 2);
             }
-            result[i] = Math.sqrt(result[i] / window.size());
+            result[i] = Math.sqrt(result[i] /ws);
             featureVector[nm*2+i][0]=result[i];
         }
         return result;
@@ -90,11 +90,11 @@ public class U_FeatureExtraction {
         Double[] result1 = new Double[size_line];
         Arrays.fill(result1, 0.0);
         for (int i = 0; i < size_line; i++) {
-            for (int j = 0; j < window.size(); j++) {
-                result1[i] = result1[i] + Math.pow((window.get(j)[i] - mean[i]), 2);
+            for (int j = 0; j < ws; j++) {
+                result1[i] = result1[i] + Math.pow((window.get(i)[j] - mean[i]), 2);
             }
-            result[i] = Math.sqrt(result1[i] / (window.size() - 1));
-            featureVector[nm*3+i][0]=result[i];
+            result[i] = Math.sqrt(result1[i] / (ws- 1));
+            featureVector[nm+i][0]=result[i];
         }
         return result;
     }
