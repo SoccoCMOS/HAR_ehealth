@@ -30,6 +30,7 @@ import dz.esi.pfe.pfe_app.DAL.Model.HeartRate;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
 import dz.esi.pfe.pfe_app.DAL.Model.RPeaks;
 import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
+import dz.esi.pfe.pfe_app.R;
 
 /**
  * Created by DUALCOMPUTER on 5/19/2017.
@@ -40,7 +41,7 @@ public class ECGAnalysis {
     Double[] data;
     // Add here ecg features
     RequestQueue queue;
-    String url="http://192.168.43.79:8000/ecg/";
+    String url=context.getResources().getString(R.string.phywebservice);
     StringRequest request;
     Date begin,end;
     Long wid;

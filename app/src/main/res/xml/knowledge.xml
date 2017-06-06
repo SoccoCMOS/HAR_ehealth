@@ -14,7 +14,6 @@
             <rules>
                 <classe value="F"> Femelle </classe>
                 <classe value="M"> Male </classe>
-                <classe value="T"> Transgenre </classe>
                 <classe value="U"> Inconnu </classe>
             </rules>
         </data>

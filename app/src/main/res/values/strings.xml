@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_name">PFE_App</string>
+    <string name="app_name">Owl Cardio</string>
     <string name="action_settings">Settings</string>
-    <string name="webservice">http://192.168.1.6:8000/activity</string>
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
@@ -16,4 +15,13 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <string name="title_activity_launcher">Owl App</string>
+    <string name="launcher_button">Lancer</string>
+    <string name="labelrhr">FC au repos </string>
+    <string name="labelahr">FC active </string>
+    <string name="labelimpact"> Activité critique </string>
+    <string name="labelanormal"> Episodes d\'arythmie </string>
+    <string name="title_graph_list">List</string>
+    <string name="title_graph_detail">graph Detail</string>
 </resources>

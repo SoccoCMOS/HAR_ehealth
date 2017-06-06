@@ -2,18 +2,25 @@ package dz.esi.pfe.pfe_app.DAL.DataAccessObjects;
 
 import android.content.Context;
 
+import java.io.InputStream;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities.CSVFile;
 import dz.esi.pfe.pfe_app.DAL.Model.Account;
 import dz.esi.pfe.pfe_app.DAL.Model.Activity;
 import dz.esi.pfe.pfe_app.DAL.Model.Connexion;
 import dz.esi.pfe.pfe_app.DAL.Model.Enum.BloodGroup;
 import dz.esi.pfe.pfe_app.DAL.Model.Enum.Gender;
 import dz.esi.pfe.pfe_app.DAL.Model.Enum.Position;
+import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Type;
 import dz.esi.pfe.pfe_app.DAL.Model.User;
 import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
+import dz.esi.pfe.pfe_app.R;
 
 public class Utilities {
 
@@ -123,6 +130,23 @@ public class Utilities {
                 new Connexion(21, datetime,datetime,50,"socco","ECGL1"));
         S_DataAccess.startActionInsert(context,"connexion",
                 new Connexion(22, datetime,datetime,50,"socco","ECGL2"));
+    }
+
+    public static void fillData(Context context){
+        InputStream inputStream1;
+        inputStream1= context.getResources().openRawResource(R.raw.ecg2);
+        CSVFile csvFile1 = new CSVFile(inputStream1);
+        csvFile1.read();
+
+        List<Double[]> ecg=csvFile1.ReadfromTo(0,3000);
+        ArrayList<Measure_Data> measure_data=new ArrayList<>();
+        long now=new java.util.Date().getTime();
+
+        for(int i=0; i<ecg.size(); i++)
+        {
+            measure_data.add(new Measure_Data(i,"ECGL1",ecg.get(i)[0],new Date(now),"socco"));
+            S_DataAccess.startActionInsert(context,"measuredata",measure_data.get(i));
+        }
     }
 
 }

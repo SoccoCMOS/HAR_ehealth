@@ -13,6 +13,7 @@ import java.util.List;
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.S_Processing;
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
+import dz.esi.pfe.pfe_app.R;
 
 
 public class C_Communication extends IntentService{
@@ -71,14 +72,14 @@ public class C_Communication extends IntentService{
 
     @Override
     protected  void onHandleIntent(Intent intent) {
-
+        String serverAddress=context.getResources().getString(R.string.mqttbroker);
         if (intent != null) {
             Log.d("debug", "inside the service c_comm");
             final String action = intent.getAction();
             if (ACTION_sub.equals(action)) {
                 Log.d("debug_c_comm","handling action sub");
                 for(int i=0;i<topics.length;i++) {
-                    subclient   = new subClientService(this.context, "tcp://192.168.43.79:1883", "120");
+                    subclient   = new subClientService(this.context, serverAddress, "120");
                     subclient.subscribe(topics[i],i);}
 
             }

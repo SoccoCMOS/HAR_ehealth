@@ -1,3 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        is-multidex="true"
+        jar="D:\PFE_App\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="132aa551c341f6c06a63b6e5400e93bbbb091445">
+        <dex dex="D:\PFE_App\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_7169260dc343c716bd580efcb27a8b9457682a29\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="D:\PFE_App\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="caff8e51a24901cfc9cd7e1cf83d84f4cb0c103b">
+        <dex dex="D:\PFE_App\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_9dfcc3add36f6e14bff1df93beaabbeeabf7c9dc\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="D:\PFE_App\app\libs\gson-2.3.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="ecb6e1f8e4b0e84c4b886c2f14a1500caf309757">
+        <dex dex="D:\PFE_App\app\build\intermediates\transforms\dex\debug\folders\1000\2\gson-2.3.1_19f8322298cafe258273c4cf4c19a0a1f72219e0\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="D:\PFE_App\app\libs\android-async-http-1.4.4.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="3bae85a076241828810bf8fbcc12e5891d5fc34c">
+        <dex dex="D:\PFE_App\app\build\intermediates\transforms\dex\debug\folders\1000\2\android-async-http-1.4.4_2a8fc57ec2d9aaa38f2f731728424c8800778573\classes.dex" />
+    </item>
+
+</items>

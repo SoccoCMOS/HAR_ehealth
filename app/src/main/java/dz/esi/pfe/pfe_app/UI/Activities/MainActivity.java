@@ -37,17 +37,12 @@ import dz.esi.pfe.pfe_app.Unit_Tests.U_DecisionTest;
 
 public class MainActivity extends AppCompatActivity {
 
-    ResultsReceiver receiver=null;
-    Boolean receiverRegistered=false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        receiver=new ResultsReceiver();
 
 //        String topics[]=new String[]{
 //                "M/MV/A/Acc-x","M/MV/A/Acc-y","M/MV/A/Acc-z","M/MV/W/Acc-x","M/MV/W/Acc-y","M/MV/W/Acc-z","M/MV/C/Acc-x","M/MV/C/Acc-y","M/MV/C/Acc-z",
@@ -60,8 +55,11 @@ public class MainActivity extends AppCompatActivity {
 //            subclient.subscribe();
 //        }
 
-        MQTT_Test.context=this;
-        MQTT_Test.MQTT_test();
+        Utilities.initialize(this);
+        Utilities.sessionconfig(this);
+        Utilities.fillData(this);
+        //MQTT_Test.context=this;
+        //MQTT_Test.MQTT_test();
 
         //U_DecisionTest.context=this;
         //U_DecisionTest.test_RR_Rules();
@@ -91,29 +89,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (!receiverRegistered) {
-            registerReceiver(receiver,new IntentFilter("ECG_RECEIVED"));
-            registerReceiver(receiver,new IntentFilter("ACTIVITY_RECEIVED"));
-            receiverRegistered = true;
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (receiverRegistered) {
-            unregisterReceiver(receiver);
-            receiverRegistered = false;
-        }
-    }
-
-    public void launch(View view) {
-        Intent intent=new Intent(this,DashboardActivity.class);
-        startActivity(intent);
     }
 }

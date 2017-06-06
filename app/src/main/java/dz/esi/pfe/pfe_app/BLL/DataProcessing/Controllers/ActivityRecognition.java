@@ -28,6 +28,7 @@ import dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities.U_Matrix;
 import dz.esi.pfe.pfe_app.DAL.Model.Activity;
 import dz.esi.pfe.pfe_app.DAL.Model.WindowActivity;
 import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
+import dz.esi.pfe.pfe_app.R;
 
 /**
  * Created by Sara on 5/12/2017.
@@ -38,8 +39,8 @@ public class ActivityRecognition {
     Context context;
     Double[][] featureVector;
     RequestQueue queue;
-    String url="http://192.168.43.79:8000/activity/";
-    String urlget="http://192.168.43.79:8000/activity/?param=no+param&tr=NP&p=1&wid=";
+    String url=context.getResources().getString(R.string.harwebservice);
+    String urlget=url+"?param=no+param&tr=NP&p=1&wid=";
     Activity activity;
     Double np[][];
     ArrayList<Double> npb;

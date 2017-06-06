@@ -421,6 +421,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return wordList;
     }
 
+    public ArrayList<Measure_Data> getECGMeasureData() {
+        ArrayList<Measure_Data> wordList;
+        wordList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM measuredata where CodeSens='ECGL1'";
+        SQLiteDatabase database = this.getWritableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new Measure_Data(cursor.getLong(0),cursor.getString(1),cursor.getDouble(2),
+                        Date.valueOf(cursor.getString(3)),cursor.getString(4)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
     /**
      * Get list of rpeaks from SQLite DB as Array List
      * @return

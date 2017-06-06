@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="dz.esi.pfe.pfe_app.Monitoring">
+
+<SearchView
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:gravity="center_horizontal"
+    android:layout_alignParentTop="true"
+    android:id="@+id/searchView" />
+
+<ExpandableListView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/list_activity"
+    android:layout_below="@+id/searchView"
+    android:layout_margin="10dp" >
+</ExpandableListView>
+
+<ExpandableListView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/list_heart"
+    android:layout_below="@+id/list_activity"
+    android:layout_margin="10dp" >
+</ExpandableListView>
+
+<ExpandableListView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/list_heart"
+    android:id="@+id/list_fitness"
+    android:layout_margin="10dp" >
+</ExpandableListView>
+
+</LinearLayout>
