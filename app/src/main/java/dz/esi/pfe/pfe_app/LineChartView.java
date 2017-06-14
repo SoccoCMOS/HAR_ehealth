@@ -1,7 +1,9 @@
 package dz.esi.pfe.pfe_app;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -155,6 +157,8 @@ public class LineChartView extends AppCompatActivity {
         LineData lineData = new LineData(dataSet);
         lineData.addDataSet(dataSet2);
 
+        courbe.getLegend().setWordWrapEnabled(true);
+
         courbe.setData(lineData);
         courbe.getDescription().setEnabled(false);
         courbe.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -165,12 +169,18 @@ public class LineChartView extends AppCompatActivity {
     private void fill_chart() {
         List<Entry> entries = new ArrayList<>();
         for (int i=0; i<data.length; i++) {
-            entries.add(new Entry(data[i][0],data[i][1]));
+            Log.d("insidecharttime",data[i][0]+"");
+            Log.d("insidechartvalue",data[i][1]+"");
+            entries.add(new Entry(i,data[i][1]));
         }
 
         LineDataSet dataSet = new LineDataSet(entries,datasetname[0]);
         LineData pieData = new LineData(dataSet);
         courbe.setData(pieData);
+        //dataSet.setCircleRadius(0);
+        dataSet.setColor(Color.RED);
+        //dataSet.setCircleColor(ColorTemplate.COLOR_NONE);
+        dataSet.setDrawCircles(false);
 
         courbe.getDescription().setEnabled(false);
         courbe.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);

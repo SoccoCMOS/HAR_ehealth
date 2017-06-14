@@ -39,7 +39,7 @@ public class ActivityRecognition {
     Context context;
     Double[][] featureVector;
     RequestQueue queue;
-    String url=context.getResources().getString(R.string.harwebservice);
+    String url="http://192.168.1.2:8000/activity/";
     String urlget=url+"?param=no+param&tr=NP&p=1&wid=";
     Activity activity;
     Double np[][];

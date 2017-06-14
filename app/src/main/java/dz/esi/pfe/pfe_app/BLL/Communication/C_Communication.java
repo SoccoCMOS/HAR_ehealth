@@ -13,6 +13,7 @@ import java.util.List;
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.S_Processing;
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
+import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
 import dz.esi.pfe.pfe_app.R;
 
 
@@ -72,7 +73,7 @@ public class C_Communication extends IntentService{
 
     @Override
     protected  void onHandleIntent(Intent intent) {
-        String serverAddress=context.getResources().getString(R.string.mqttbroker);
+        String serverAddress=this.getResources().getString(R.string.mqttbroker);
         if (intent != null) {
             Log.d("debug", "inside the service c_comm");
             final String action = intent.getAction();
@@ -89,18 +90,18 @@ public class C_Communication extends IntentService{
                 Long begin=new java.util.Date().getTime();
                 Long finish=begin+3000;
                 Long wid=intent.getLongExtra("wid",0);
+                // Persist in database har data & phy data
+                S_DataAccess.startActionInsert(this,"measuredatas",wid);
                 S_Processing.startActionFeHar(context,begin,finish,wid);
-                Log.d("beginhar", "" + begin);
-                Log.d("finishhar",""+finish);
+                //Log.d("beginhar", "" + begin);
+                //Log.d("finishhar",""+finish);
                 S_Processing.startActionFePhy(context, begin, finish,wid);
             }
 
         }
         else Log.d("debug_c_comm","haw l'intent rah null");
     }
-
-
-
+    
     public void removeElement(int index)
     {
         buffer.remove(index);

@@ -140,11 +140,12 @@ public class Utilities {
 
         List<Double[]> ecg=csvFile1.ReadfromTo(0,3000);
         ArrayList<Measure_Data> measure_data=new ArrayList<>();
-        long now=new java.util.Date().getTime();
+        Date datetime=new Date(Calendar.getInstance().getTimeInMillis());
 
         for(int i=0; i<ecg.size(); i++)
         {
-            measure_data.add(new Measure_Data(i,"ECGL1",ecg.get(i)[0],new Date(now),"socco"));
+            measure_data.add(new Measure_Data(i,"ECGL1",ecg.get(i)[0],datetime,"socco"));
+            datetime.setTime(datetime.getTime()+1);
             S_DataAccess.startActionInsert(context,"measuredata",measure_data.get(i));
         }
     }

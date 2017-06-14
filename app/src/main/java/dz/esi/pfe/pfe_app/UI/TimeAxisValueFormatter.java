@@ -18,7 +18,7 @@ public class TimeAxisValueFormatter implements IAxisValueFormatter {
     public String getFormattedValue(float value, AxisBase axisBase) {
         Long time=Long.valueOf(Math.round(value));
         Date date=new Date(time);
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("mm:ss.SS");
         return simpleDateFormat.format(date);
     }
 }

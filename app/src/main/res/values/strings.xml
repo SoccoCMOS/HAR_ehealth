@@ -24,4 +24,6 @@
     <string name="labelanormal"> Episodes d\'arythmie </string>
     <string name="title_graph_list">List</string>
     <string name="title_graph_detail">graph Detail</string>
+    <string name="button_view_history">Afficher</string>
+    <string name="button_edit_history">Modifier</string>
 </resources>

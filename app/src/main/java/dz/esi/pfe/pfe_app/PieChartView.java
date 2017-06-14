@@ -113,6 +113,8 @@ public class PieChartView extends AppCompatActivity {
         courbe.getDescription().setEnabled(false);
         courbe.getLegend().setEnabled(false);
 
+        courbe.getLegend().setWordWrapEnabled(true);
+
         Legend legend=courbe.getLegend();
         legend.setPosition(Legend.LegendPosition.BELOW_CHART_CENTER);
 

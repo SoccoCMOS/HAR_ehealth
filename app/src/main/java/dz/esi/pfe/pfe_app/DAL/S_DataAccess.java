@@ -50,11 +50,9 @@ public class S_DataAccess extends IntentService {
         intent.setAction(ACTION_INSERT);
         // pass parameters here
         intent.putExtra("table", table);
-        if(!table.equals("measuredatas")) {
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("data", (Serializable) data);
-            intent.putExtra("bundle", bundle);
-        }
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("data", (Serializable) data);
+        intent.putExtra("bundle", bundle);
         context.startService(intent);
         //Log.d("inserttion", String.valueOf(data));
     }
@@ -85,10 +83,9 @@ public class S_DataAccess extends IntentService {
             Object d=null;
             if (ACTION_INSERT.equals(action)) {
                 // Récupérer les paramètres depuis l'intent
-                if(!table.equals("measuredatas")) {
-                    Bundle bundle = intent.getExtras().getBundle("bundle");
-                    d = bundle.getSerializable("data");
-                }
+                Bundle bundle = intent.getExtras().getBundle("bundle");
+                d = bundle.getSerializable("data");
+
                 // call function that handles it
                 handleActionInsert(table,d);
             }
@@ -144,16 +141,14 @@ public class S_DataAccess extends IntentService {
         else if(table.equals("heartrate")) {
             db.insertHeartrate((HeartRate) data);
         }
-        else if (table.equals(("filteredecg"))){
-            /*ArrayList<Measure_Data> md=WindowData.filtered_ecg.get(data);
-            db.insertMeasureDatas(md);
-            WindowData.filtered_ecg.remove(data);*/
-        }
         else if(table.equals("rpeakss")){
             db.insertRPeaks((ArrayList<RPeaks>)data);
         }
         else if(table.equals("measuredatas")){
-            //db.insertMeasureDatas((ArrayList<Measure_Data>)WindowData.hardata);
+            Long wid=(Long) data;
+            Long begin=new java.util.Date().getTime();
+            db.insertMeasureDatas((ArrayList<Double[]>) WindowData.hhardata.get(wid),begin);
+            db.insertMeasureDatas((ArrayList<Double[]>) WindowData.hphydata.get(wid),begin);
         }
         else throw new UnsupportedOperationException("Table not yet created");
     }

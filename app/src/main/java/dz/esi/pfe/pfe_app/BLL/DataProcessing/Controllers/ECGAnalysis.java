@@ -41,7 +41,7 @@ public class ECGAnalysis {
     Double[] data;
     // Add here ecg features
     RequestQueue queue;
-    String url=context.getResources().getString(R.string.phywebservice);
+    String url="http://192.168.1.2:8000/ecg/";
     StringRequest request;
     Date begin,end;
     Long wid;

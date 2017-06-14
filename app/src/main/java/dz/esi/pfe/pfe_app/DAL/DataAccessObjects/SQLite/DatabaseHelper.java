@@ -660,22 +660,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.close();
     }
 
-    public void insertMeasureDatas(ArrayList<Measure_Data> queryValues) {
+    public void insertMeasureDatas(ArrayList<Double[]> queryValues, Long begin) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         database.beginTransaction();
-        for(int i=0; i<queryValues.size(); i++) {
-            values.put(CODESENS,queryValues.get(i).getCodeSens());
-            values.put(ID,queryValues.get(i).getId());
-            values.put(VALUE,queryValues.get(i).getValue());
-            values.put(TIMESTAMP,String.valueOf(queryValues.get(i).getTimestamp()));
-            values.put(USERID,queryValues.get(i).getUserID());
-            //Log.d("insertingid",String.valueOf(queryValues.get(i).getId()));
-            database.insertWithOnConflict(TABLE_MEASUREDATA, null, values,SQLiteDatabase.CONFLICT_IGNORE);
+        String codes[];
+        int i=0,j=0;
+        if(queryValues.size()==2)
+            codes=new String[]{"ECGL1","ECGL2"};
+        else
+            codes=new String[]{"CAccX","CAccY","CAccZ","AAccX","AAccY","AAccZ","WAccX","WAccY","WAccZ",
+                "AGyrX","AGyrY","AGyrZ","WGyrX","WGyrY","WGyrZ",
+                "AMagX","AMagY","AMagZ","WMagX","WMagY","WMagZ"};
+
+        try {
+            for (i = 0; i < queryValues.size(); i++) {
+                values.put(CODESENS, codes[i]);
+                for (j = 0; j < queryValues.get(i).length; j++) {
+                    values.put(ID, j);
+                    values.put(VALUE, queryValues.get(i)[j]);
+                    values.put(TIMESTAMP, String.valueOf(new Date(begin + j)));
+                    values.put(USERID, "socco");
+                    database.insertWithOnConflict(TABLE_MEASUREDATA, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+                }
+            }
+            database.setTransactionSuccessful();
+            database.endTransaction();
+            database.close();
         }
-        database.setTransactionSuccessful();
-        database.endTransaction();
-        database.close();
+        catch(ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
+            Log.d("index",""+i+" "+j);
+        }
     }
 
     /**

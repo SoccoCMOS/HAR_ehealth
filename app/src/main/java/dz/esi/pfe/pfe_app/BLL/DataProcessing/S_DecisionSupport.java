@@ -1,13 +1,17 @@
 package dz.esi.pfe.pfe_app.BLL.DataProcessing;
 
+import android.Manifest;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -30,10 +34,12 @@ import dz.esi.pfe.pfe_app.R;
  */
 public class S_DecisionSupport extends IntentService {
 
-
+    private static final int MY_PERMISSIONS_REQUEST_SMS = 2 ;
     public S_DecisionSupport() {
         super("S_DecisionSupport");
     }
+
+    private static Long count_arythmias=new Long(0);
 
     private static String ACTION_CHECK_HEART_RATE="checkhr";
     private static String ACTION_CALLBACK="callback";
@@ -87,7 +93,7 @@ public class S_DecisionSupport extends IntentService {
                     //  Call notification service of the phone */
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(this)
-                                    .setSmallIcon(R.drawable.notification_icon)
+                                    .setSmallIcon(R.drawable.logo_appbar)
                                     .setContentTitle("Window " + hr.getId())
                                     .setContentText("Fréquence cardiaque: " + Math.round(hr.getValue()) + ", Activité: " + new Activity(codeact).getActivityLabel());
 
@@ -103,7 +109,7 @@ public class S_DecisionSupport extends IntentService {
                     //  Call notification service of the phone *//*
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(this)
-                                    .setSmallIcon(R.drawable.notification_icon)
+                                    .setSmallIcon(R.drawable.logo_appbar)
                                     .setContentTitle("Window "+hr.getId())
                                     .setContentText("Intervalles R-R: " + interpretation[1].getDetails());
 
@@ -119,7 +125,7 @@ public class S_DecisionSupport extends IntentService {
                     //  Call notification service of the phone */
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(this)
-                                    .setSmallIcon(R.drawable.notification_icon)
+                                    .setSmallIcon(R.drawable.logo_appbar)
                                     .setContentTitle("Window "+hr.getId())
                                     .setContentText("Rythme : " + interpretation[2].getDetails());
 
@@ -136,7 +142,7 @@ public class S_DecisionSupport extends IntentService {
                     //  Call notification service of the phone */
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(this)
-                                    .setSmallIcon(R.drawable.notification_icon)
+                                    .setSmallIcon(R.drawable.logo_appbar)
                                     .setContentTitle("Alerte")
                                     .setContentText("Diagnostic probable : " + interpretation[3].getDetails());
 
@@ -145,10 +151,25 @@ public class S_DecisionSupport extends IntentService {
                     // mId allows you to update the notification later on.
                     mNotificationManager.notify(anomalies, mBuilder.build());
                     anomalies++;
+/*                    if (count_arythmias++ >= 3) {
+                        // SEND SMS
+                        if (ActivityCompat.checkSelfPermission(, Manifest.permission.SEND_SMS)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            //Toast.makeText(getActivity(), "No permission to call", Toast.LENGTH_LONG).show();
+                            ActivityCompat.requestPermissions(,
+                                    new String[]{Manifest.permission.SEND_SMS},
+                                    MY_PERMISSIONS_REQUEST_SMS);
+                        } else {
+                            SmsManager smsManager = SmsManager.getDefault();
+                            smsManager.sendTextMessage("0561267262", null, "Your friend needs a cardio checkup ASAP.", null, null);
+                        }
+                        // REINITIALIZE
+                        count_arythmias = Long.valueOf(0);
+                    }*/
                 }
-
             }
         }
         else Log.d("debug", "inside the service null intent");
     }
+
 }

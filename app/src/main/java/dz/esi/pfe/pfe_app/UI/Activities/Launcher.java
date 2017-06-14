@@ -21,6 +21,7 @@ import dz.esi.pfe.pfe_app.DAL.DataAccessObjects.SQLite.DatabaseHelper;
 import dz.esi.pfe.pfe_app.DAL.DataAccessObjects.Utilities;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
 import dz.esi.pfe.pfe_app.R;
+import dz.esi.pfe.pfe_app.Unit_Tests.MQTT_Test;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -46,11 +47,13 @@ public class Launcher extends AppCompatActivity {
         mContentView = findViewById(R.id.fullscreen_content);
 
         receiver=new ResultsReceiver();
-        Utilities.initialize(this);
-        Utilities.sessionconfig(this);
-        Utilities.fillData(this);
-        ArrayList<Measure_Data> ecg=new DatabaseHelper(this,"owldb",null,1).getECGMeasureData();
-        Toast.makeText(this, ""+ecg.size()+" "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(ecg.get(0).getTimestamp()), Toast.LENGTH_LONG).show();
+        //Utilities.initialize(this);
+        //Utilities.sessionconfig(this);
+        MQTT_Test.context=this;
+        MQTT_Test.MQTT_test();
+        //Utilities.fillData(this);
+        //ArrayList<Measure_Data> ecg=new DatabaseHelper(this,"owldb",null,1).getECGMeasureData();
+        //Toast.makeText(this, ""+ecg.size()+" "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(ecg.get(0).getTimestamp()), Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -20,6 +20,8 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+import dz.esi.pfe.pfe_app.FollowUp;
+import dz.esi.pfe.pfe_app.History;
 import dz.esi.pfe.pfe_app.Monitoring;
 import dz.esi.pfe.pfe_app.R;
 import dz.esi.pfe.pfe_app.UI.C_Affichage;
@@ -64,6 +66,7 @@ public class DashboardActivity extends AppCompatActivity {
         List<PieEntry> entries = new ArrayList<>();
 
         for (int i=0; i<dataObjects.length; i++) {
+            if(dataObjects[i]!=0)
             entries.add(new PieEntry(dataObjects[i],labels[i]));
         }
 
@@ -86,9 +89,13 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     public void launch_history(View view) {
+        Intent intent=new Intent(this, History.class);
+        startActivity(intent);
     }
 
     public void launch_followup(View view) {
+        Intent intent=new Intent(this, FollowUp.class);
+        startActivity(intent);
     }
 
     public void launch_help(View view) {

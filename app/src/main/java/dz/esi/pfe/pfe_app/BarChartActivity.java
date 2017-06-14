@@ -166,6 +166,8 @@ public class BarChartActivity extends AppCompatActivity {
                 ColorTemplate.rgb("#9c27b0"),
                 ColorTemplate.rgb("#f44336")
         });
+
+        courbe.getLegend().setWordWrapEnabled(true);
         courbe.getDescription().setEnabled(false);
         courbe.getLegend().setEnabled(false);
         courbe.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);

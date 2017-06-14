@@ -12,10 +12,12 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo_appbar"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -71,7 +73,14 @@
             android:name=".LineChartView"
             android:label="Visualisation" />
         <activity android:name=".PieChartView" />
-        <activity android:name=".BarChartActivity"></activity>
+        <activity android:name=".BarChartActivity" />
+        <activity
+            android:name=".FollowUp"
+            android:label="Contacts"
+            android:parentActivityName=".UI.Activities.DashboardActivity"></activity>
+        <activity
+            android:name=".History"
+            android:label="Historique médical" />
     </application>
 
 </manifest>

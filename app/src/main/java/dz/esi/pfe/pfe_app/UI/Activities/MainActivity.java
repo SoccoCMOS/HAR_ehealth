@@ -55,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
 //            subclient.subscribe();
 //        }
 
-        Utilities.initialize(this);
-        Utilities.sessionconfig(this);
-        Utilities.fillData(this);
-        //MQTT_Test.context=this;
-        //MQTT_Test.MQTT_test();
+        //Utilities.initialize(this);
+        //Utilities.sessionconfig(this);
+        //Utilities.fillData(this);
+        MQTT_Test.context=this;
+        MQTT_Test.MQTT_test();
 
         //U_DecisionTest.context=this;
         //U_DecisionTest.test_RR_Rules();
