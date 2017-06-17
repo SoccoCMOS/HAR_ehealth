@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ public class ECGAnalysis {
     }
 
     public void getECGFeatures(){
+        Log.d("timebeginfephy",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(new java.util.Date()));
         request = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>()
                 {
@@ -63,6 +65,7 @@ public class ECGAnalysis {
                     public void onResponse(String response) {
                         // response
                         Log.d("Response ecglead ", response);
+                        Log.d("timeendfephy",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(new java.util.Date()));
                         // Write it on DB
                         Gson gsonPretty = new GsonBuilder().setPrettyPrinting().create();
                         JSONObject json;
@@ -75,6 +78,8 @@ public class ECGAnalysis {
                             Double[] ts= gsonPretty.fromJson(ts_jar, Double[].class);
                             Integer[][] rpeaks= gsonPretty.fromJson(rpeaks_jar, Integer[][].class);
                             Integer heart_rate= gsonPretty.fromJson(heart_rate_jar, Integer.class);
+                            //WindowData.lasthr=heart_rate;
+                            //WindowData.lastahr=heart_rate;
 
                             long time=0;
 
@@ -88,7 +93,7 @@ public class ECGAnalysis {
                             }
                             S_DataAccess.startActionInsert(context,"rpeakss",rPeakses);
                             time=(begin.getTime()+end.getTime())/2;
-                            HeartRate heartRate= new HeartRate(wid, heart_rate, new Date(time),"socco");
+                            HeartRate heartRate= new HeartRate(wid+102, heart_rate, new Date(time),"socco");
                             S_DataAccess.startActionInsert(context, "heartrate",heartRate);
 
                             Intent i = new Intent("ECG_RECEIVED");

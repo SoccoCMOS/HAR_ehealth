@@ -1,6 +1,8 @@
 package dz.esi.pfe.pfe_app.UI;
 
 import com.github.mikephil.charting.charts.BarLineChartBase;
+import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
@@ -15,9 +17,9 @@ public class DayAxisValueFormatter implements IAxisValueFormatter
             "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
 
-    private LineChart chart;
+    private CombinedChart chart;
 
-    public DayAxisValueFormatter(LineChart chart) {
+    public DayAxisValueFormatter(CombinedChart chart) {
         this.chart = chart;
     }
 

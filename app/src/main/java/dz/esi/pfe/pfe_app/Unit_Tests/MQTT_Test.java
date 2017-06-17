@@ -1,7 +1,9 @@
 package dz.esi.pfe.pfe_app.Unit_Tests;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import dz.esi.pfe.pfe_app.BLL.Communication.C_Communication;
@@ -30,6 +32,7 @@ public class MQTT_Test {
         Log.d("debug_mqtt_test","after initialization");
         WindowData.context=context;
         WindowData.intialize();
+
         C_Communication.context=context;
         C_Communication c = new C_Communication();
         Log.d("debug_mqtt_test","before starting action sub");

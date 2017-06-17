@@ -1,13 +1,13 @@
 package dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities;
 
-        import java.io.BufferedWriter;
-        import java.io.FileWriter;
-        import java.util.List;
-        import java.io.BufferedReader;
-        import java.io.IOException;
-        import java.io.InputStream;
-        import java.io.InputStreamReader;
-        import java.util.ArrayList;;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;;
 
 public class CSVFile {
 
@@ -42,6 +42,34 @@ public class CSVFile {
             }
         }
     }
+    public List<Double> readOneC() {
+
+        List<Double> doubletList = new ArrayList<Double>();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        try {
+            String csvLine;
+            int i=0;
+            String[] row = new String[0];
+            while ((csvLine = reader.readLine()) != null) {
+                row = csvLine.split(";");
+                System.out.println("row 0: " + Double.parseDouble(row[0]));
+                doubletList.add(Double.parseDouble(row[0]));
+                i++;
+            }
+
+        } catch (IOException ex) {
+            throw new RuntimeException("Error in reading CSV file: " + ex);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException("Error while closing input stream: " + e);
+            }
+        }
+        return doubletList;
+    }
+
 
     private Double[] convert(String[] string) {
         Double number[] = new Double[string.length];
@@ -81,6 +109,7 @@ public class CSVFile {
 
         return window;
     }
+
 
     public static void writeCSVfile(String filename, Double[] result) throws IOException {
 

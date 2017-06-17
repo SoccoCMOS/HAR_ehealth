@@ -17,6 +17,10 @@ import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
 public class WindowData implements Serializable {
 
     int id;
+    public static String lastact="Debout";
+    public static double lasthr=70;
+    public static double lastahr=80;
+    public static int nbanomalies=0;
 
     //public static List<Double[]> hardata;
     public static HashMap<Long,List<Double[]>> hhardata;

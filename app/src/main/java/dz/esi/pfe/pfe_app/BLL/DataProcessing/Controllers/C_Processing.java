@@ -1,7 +1,9 @@
 package dz.esi.pfe.pfe_app.BLL.DataProcessing.Controllers;
 
 import android.content.Context;
+import android.util.Log;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
@@ -30,8 +32,9 @@ public class C_Processing {
 
     public void processWindow(int nm, int ws,Date begin, Date finish){
         // Récupérer le vecteur de caractéristiques pour la fenêtre et les mesures en question
+        Log.d("timebeginfehar",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(new java.util.Date()));
         fv=new U_FeatureExtraction(this.context,window,ws,nm).applyFE();
-
+        Log.d("timeendfehar",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(new java.util.Date()));
         // Instancier une tâche de reconnaissance d'activité
         ActivityRecognition activityRecognitionTask=new ActivityRecognition(fv,this.context,begin,finish,wid);
         activityRecognitionTask.getActivityByFeatures();

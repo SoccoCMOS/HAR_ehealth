@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.Interpretation;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities.U_DecisionRules;
 import dz.esi.pfe.pfe_app.DAL.DataAccessObjects.SQLite.DatabaseHelper;
 import dz.esi.pfe.pfe_app.DAL.Model.Activity;
@@ -43,7 +44,7 @@ public class S_DecisionSupport extends IntentService {
 
     private static String ACTION_CHECK_HEART_RATE="checkhr";
     private static String ACTION_CALLBACK="callback";
-    private static int anomalies=0;
+    public static int anomalies=0;
 
     public static void startActionCheckHR(Context context,HeartRate hr){
         Intent intent = new Intent(context, S_DecisionSupport.class);
@@ -151,6 +152,7 @@ public class S_DecisionSupport extends IntentService {
                     // mId allows you to update the notification later on.
                     mNotificationManager.notify(anomalies, mBuilder.build());
                     anomalies++;
+                    WindowData.nbanomalies++;
 /*                    if (count_arythmias++ >= 3) {
                         // SEND SMS
                         if (ActivityCompat.checkSelfPermission(, Manifest.permission.SEND_SMS)

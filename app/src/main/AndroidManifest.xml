@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="dz.esi.pfe.pfe_app">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,6 +15,8 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -65,7 +68,7 @@
         </activity>
         <activity
             android:name=".UI.Activities.DashboardActivity"
-            android:label="Aperçu global" />
+            android:label="Aperçu" />
         <activity
             android:name=".Monitoring"
             android:label="Surveillance" />
@@ -77,10 +80,17 @@
         <activity
             android:name=".FollowUp"
             android:label="Contacts"
-            android:parentActivityName=".UI.Activities.DashboardActivity"></activity>
+            android:parentActivityName=".UI.Activities.DashboardActivity" />
         <activity
             android:name=".History"
             android:label="Historique médical" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".UI.Activities.DashboardActivity" />
+        <activity
+            android:name=".CombinedChartActivity"
+            android:label="Impact de l'activité"/>
     </application>
 
 </manifest>

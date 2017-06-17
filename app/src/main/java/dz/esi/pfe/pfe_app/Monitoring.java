@@ -109,6 +109,14 @@ public class Monitoring extends AppCompatActivity {
                     intent = new Intent(getApplicationContext(), BarChartActivity.class);
                     order=7;
                 }
+                else if(groupPosition==1 & childPosition==5){
+                    intent = new Intent(getApplicationContext(), CombinedChartActivity.class);
+                    order=0;
+                }
+                else if(groupPosition==1 & childPosition==10){
+                    intent = new Intent(getApplicationContext(), CombinedChartActivity.class);
+                    order=1;
+                }
                 else return false;
 
                 intent.putExtra("type",order);

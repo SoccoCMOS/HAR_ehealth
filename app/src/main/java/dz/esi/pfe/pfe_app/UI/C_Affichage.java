@@ -1,15 +1,23 @@
 package dz.esi.pfe.pfe_app.UI;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.S_DecisionSupport;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
 import dz.esi.pfe.pfe_app.DAL.DataAccessObjects.SQLite.DatabaseHelper;
+import dz.esi.pfe.pfe_app.DAL.Model.Activity;
+import dz.esi.pfe.pfe_app.DAL.Model.HeartRate;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
+import dz.esi.pfe.pfe_app.DAL.Model.WindowActivity;
 import dz.esi.pfe.pfe_app.DAL.S_DataAccess;
 
 /**
@@ -29,7 +37,7 @@ public class C_Affichage {
         //récupérer les id des fenêtres où l'activité reconnue est repos soit L1,L2 ou L3
         //récupérer les rythmes cardiaques dans ces fenêtres
         //calculer la moyenne
-        return 68;
+        return WindowData.lasthr;
     }
 
     public double get_mean_ahr()
@@ -37,20 +45,21 @@ public class C_Affichage {
         //récupérer les id des fenêtres où l'activité reconnue n'est pas repos
         //récupérer les rythmes cardiaques dans ces fenêtres
         //calculer la moyenne
-        return 80;
+        return WindowData.lastahr;
     }
 
     public int get_nb_anomalies()
     {
         //calculer le nombre de lignes de la table notification avec la date d'aujourd'hui
-        return 1;
+        return WindowData.nbanomalies;
     }
 
     public String get_critical_activity()
     {
-        //récupérer les codes d'activité des notifications
-        //retourner la plus fréquente
-        return "Course";
+        /*SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        int last_activity = preferences.getInt("lastactiv",0);
+        return new Activity(last_activity).getActivityLabel();*/
+        return WindowData.lastact;
     }
 
     public Float[] getActivitiesDuration() {
@@ -76,13 +85,15 @@ public class C_Affichage {
     }
 
     public Float[][] getHeartRate(){
-        //Récupère la fc de la dernière journée
-        Float hr[][]=new Float[100][2];
-        for(int i=0; i<100; i++) {
-            hr[i][0]=Float.valueOf(new Timestamp(i).getTime());
-            hr[i][1]=(float)(40+Math.random()*60);
+        ArrayList<HeartRate> hr = null;
+        hr=new DatabaseHelper(context,"owldb",null,1).getAllHeartRates();
+        System.out.println("size of hr " + hr.size());
+        Float[][] activ=new Float[hr.size()][2];
+        for(int i=0; i<hr.size(); i++){
+            activ[i][0]=(float)hr.get(i).getTimestamp().getTime();
+            activ[i][1]=(float)hr.get(i).getValue();
         }
-        return hr;
+        return activ;
     }
 
     public Float[][] getRR() {
@@ -90,7 +101,7 @@ public class C_Affichage {
         Float rr[][]=new Float [100][2];
         for(int i=0; i<100; i++) {
             rr[i][0]=Float.valueOf(i*10000);
-            rr[i][1]=(float)(0.42+Math.random()*0.78);
+            rr[i][1]=(float)(0.1+Math.random()*1.4);
         }
         return rr;
     }
@@ -213,5 +224,20 @@ public class C_Affichage {
             result[i]=(float)(0.42+Math.random()*0.78);
         }
         return result;
+    }
+
+    public Float[][] getActivities() {
+        ArrayList<WindowActivity> windowActivities = null;
+        try {
+            windowActivities=new DatabaseHelper(context,"owldb",null,1).getAllWindowActivities();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Float[][] activ=new Float[windowActivities.size()][2];
+        for(int i=0; i<windowActivities.size(); i++){
+            activ[i][0]=(float)i;
+            activ[i][1]=Float.valueOf(windowActivities.get(i).getCodeActivity());
+        }
+        return activ;
     }
 }

@@ -27,6 +27,7 @@ import dz.esi.pfe.pfe_app.DAL.Model.FitnessMeasure;
 import dz.esi.pfe.pfe_app.DAL.Model.HeartRate;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Data;
 import dz.esi.pfe.pfe_app.DAL.Model.Measure_Type;
+import dz.esi.pfe.pfe_app.DAL.Model.Notification;
 import dz.esi.pfe.pfe_app.DAL.Model.RPeaks;
 import dz.esi.pfe.pfe_app.DAL.Model.User;
 import dz.esi.pfe.pfe_app.DAL.Model.WindowActivity;
@@ -116,7 +117,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static String CREATE_TABLE_CONNEXION= "CREATE TABLE " + TABLE_CONNEXION + "(" + IDCONNEX + " INTEGER PRIMARY KEY, " +
             STARTCONNEX + " DATETIME, " + FINISHCONNEX + " DATETIME, " + FREQUENCY + " INTEGER, " + CODESENS
-             + " TEXT, "+ USERID + " TEXT, " + "FOREIGN KEY(" + CODESENS + ") REFERENCES " + TABLE_MEASURETYPE + "(" + CODESENS + "), "
+            + " TEXT, "+ USERID + " TEXT, " + "FOREIGN KEY(" + CODESENS + ") REFERENCES " + TABLE_MEASURETYPE + "(" + CODESENS + "), "
             +  "FOREIGN KEY(" + USERID + ") REFERENCES " + TABLE_USER + "(" + USERID + ")" + ")";
 
     private static String CREATE_TABLE_FITNESSMEASURE= "CREATE TABLE " + TABLE_FITNESSMEASURE + "(" + IDFM + " INTEGER PRIMARY KEY, " +
@@ -140,6 +141,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             VALUE + " REAL, " + TIMESTAMP + " DATETIME, " + USERID + " TEXT, " + "FOREIGN KEY(" + USERID + ") REFERENCES " + TABLE_USER + "("
             + USERID + "), " + "PRIMARY KEY(" + ID + ")" +")";
 
+    private static String CREATE_TABLE_NOTIFICATION="CREATE TABLE NOTIFICATION (ID INTEGER, STAMP TIMESTAMP, DESCRIPTION TEXT," +
+            "CRITICITY INTEGER, USERID TEXT, SEEN INTEGER, PRIMARY KEY(ID), FOREIGN KEY(USERID) REFERENCES "+ TABLE_USER + "("
+            + USERID + "))";
+
 
     public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -161,6 +166,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_WINDOWACTIVITY);
         db.execSQL(CREATE_TABLE_RPEAKS);
         db.execSQL(CREATE_TABLE_HEARTRATE);
+        db.execSQL(CREATE_TABLE_NOTIFICATION);
     }
 
     @Override
@@ -177,6 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " +TABLE_FITNESSMEASURE);
         db.execSQL("DROP TABLE IF EXISTS " +TABLE_MEASUREDATA);
         db.execSQL("DROP TABLE IF EXISTS " +TABLE_WINDOWACTIVITY);
+        db.execSQL("DROP TABLE IF EXISTS NOTIFICATION");
 
         // create new tables
         onCreate(db);
@@ -224,6 +231,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // insert row
         long activity_id = db.insert(TABLE_ACTIVITY, null, values);
         return activity_id;
+    }
+
+    /** Create notification **/
+    public long createNotification(Notification notif){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("ID", notif.getId());
+        values.put("DESCRIPTION", notif.getDescription());
+        values.put("CRITICITY",notif.getCriticity());
+        values.put("SEEN",notif.isSeen());
+        values.put("STAMP",notif.getStamp().toString());
+        values.put("USERID",notif.getUser());
+
+        // insert row
+        long row_id = db.insertWithOnConflict("NOTIFICATION", null, values,SQLiteDatabase.CONFLICT_IGNORE);
+        return row_id;
     }
 
     /** Creating a measure type  **/
@@ -341,6 +364,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return wordList;
     }
 
+    public ArrayList<Notification> getAllNotifications(){
+        ArrayList<Notification> wordList=new ArrayList<>();
+        String selectQuery="SELECT * from notification";
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wordList.add(new Notification(cursor.getInt(0),Date.valueOf(cursor.getString(1)),cursor.getString(2),
+                        cursor.getInt(3),cursor.getString(4)));
+            } while (cursor.moveToNext());
+        }
+        database.close();
+        return wordList;
+    }
+
     /**
      * Get list of Connexions from SQLite DB as Array List
      * @return
@@ -354,8 +392,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 wordList.add(new Connexion(cursor.getInt(0), Date.valueOf(cursor.getString(1)),
-                Date.valueOf(cursor.getString(2)),
-                cursor.getInt(3), cursor.getString(5), cursor.getString(4)));
+                        Date.valueOf(cursor.getString(2)),
+                        cursor.getInt(3), cursor.getString(5), cursor.getString(4)));
             } while (cursor.moveToNext());
         }
         database.close();
@@ -471,6 +509,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 wordList.add(new HeartRate(cursor.getLong(0),cursor.getDouble(1),
                         Date.valueOf(cursor.getString(2)),cursor.getString(3)));
+                System.out.println("cursor 1 "+cursor.getDouble(1) + " cursor 2 " + cursor.getString(2));
             } while (cursor.moveToNext());
         }
         database.close();
@@ -511,7 +550,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 wordList.add(new User(cursor.getString(0),cursor.getString(1),
                         Gender.valueOf(cursor.getString(2)),Date.valueOf(cursor.getString(3)),
-                                BloodGroup.valueOf(cursor.getString(4))));
+                        BloodGroup.valueOf(cursor.getString(4))));
             } while (cursor.moveToNext());
         }
         database.close();
@@ -522,16 +561,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Get list of window activities from SQLite DB as Array List
      * @return
      */
-    public ArrayList<WindowActivity> getAllWindowActivities() {
+    public ArrayList<WindowActivity> getAllWindowActivities() throws ParseException {
         ArrayList<WindowActivity> wordList;
         wordList = new ArrayList<>();
         String selectQuery = "SELECT  * FROM windowactivity";
         SQLiteDatabase database = this.getWritableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
+            System.out.println(" cursor "+cursor.getString(1));
             do {
-                wordList.add(new WindowActivity(cursor.getLong(0),Date.valueOf(cursor.getString(1)),
-                        Date.valueOf(cursor.getString(2)),cursor.getString(3),cursor.getString(4)));
+
+                wordList.add(new WindowActivity(cursor.getLong(0),
+                        new Date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(cursor.getString(1)).getTime()),
+                        new Date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(cursor.getString(2)).getTime()),cursor.getString(4),cursor.getString(3)));
             } while (cursor.moveToNext());
         }
         database.close();
@@ -670,8 +712,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             codes=new String[]{"ECGL1","ECGL2"};
         else
             codes=new String[]{"CAccX","CAccY","CAccZ","AAccX","AAccY","AAccZ","WAccX","WAccY","WAccZ",
-                "AGyrX","AGyrY","AGyrZ","WGyrX","WGyrY","WGyrZ",
-                "AMagX","AMagY","AMagZ","WMagX","WMagY","WMagZ"};
+                    "AGyrX","AGyrY","AGyrZ","WGyrX","WGyrY","WGyrZ",
+                    "AMagX","AMagY","AMagZ","WMagX","WMagY","WMagZ"};
 
         try {
             for (i = 0; i < queryValues.size(); i++) {
@@ -755,11 +797,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     wact= new WindowActivity(cursor.getLong(0),new Date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(cursor.getString(1)).getTime()),
                             new Date(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").parse(cursor.getString(2)).getTime()),
                             cursor.getString(4),cursor.getString(3));
-                Log.d("wactstart"+n,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(wact.getStart()));
-                Log.d("wactfinish"+n,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(wact.getFinish()));
-                if(wact.getStart().getTime()<=instant.getTime() & wact.getFinish().getTime()>=instant.getTime()) {
-                    wordList.add(wact);
-                }
+                    Log.d("wactstart"+n,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(wact.getStart()));
+                    Log.d("wactfinish"+n,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SS").format(wact.getFinish()));
+                    if(wact.getStart().getTime()<=instant.getTime() & wact.getFinish().getTime()>=instant.getTime()) {
+                        wordList.add(wact);
+                    }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -818,7 +860,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 //System.out.println("Date format SQLite "+cursor.getString(1) + " Date format "+
-                  //      Date.valueOf(cursor.getString(1).toString()));
+                //      Date.valueOf(cursor.getString(1).toString()));
                 wordList.add(new Connexion(cursor.getInt(0), Date.valueOf(cursor.getString(1)),
                         Date.valueOf(cursor.getString(2)),
                         cursor.getInt(3), cursor.getString(5), cursor.getString(4)));

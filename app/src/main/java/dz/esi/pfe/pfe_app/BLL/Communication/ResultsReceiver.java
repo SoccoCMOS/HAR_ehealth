@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.S_DecisionSupport;
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.Interpretation;
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
 import dz.esi.pfe.pfe_app.DAL.Model.HeartRate;
 import dz.esi.pfe.pfe_app.DAL.Model.RPeaks;
 import dz.esi.pfe.pfe_app.DAL.Model.WindowActivity;
@@ -54,6 +55,12 @@ public  class ResultsReceiver extends BroadcastReceiver {
         }
         else if(prog.get(wa.getIdWindow())==1){
             S_DecisionSupport.startActionCallback(context,hrt,rpks,Integer.valueOf(wa.getCodeActivity()));
+            if(Integer.valueOf(wa.getCodeActivity())<=3){
+                WindowData.lasthr=hrt.getValue();
+            }
+            else{
+                WindowData.lastahr=hrt.getValue();
+            }
             prog.remove(wa.getIdWindow());
         }
         Log.d("broadcastwac",(wac==null)+"");
@@ -68,6 +75,12 @@ public  class ResultsReceiver extends BroadcastReceiver {
         }
         else if(prog.get(hr.getId())==0){
             S_DecisionSupport.startActionCallback(context,hr,rpeaks,Integer.valueOf(wac.getCodeActivity()));
+            if(Integer.valueOf(wac.getCodeActivity())<=3){
+                WindowData.lasthr=hr.getValue();
+            }
+            else{
+                WindowData.lastahr=hr.getValue();
+            }
             prog.remove(hr.getId());
         }
 

@@ -1,8 +1,13 @@
 package dz.esi.pfe.pfe_app.UI.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,10 +25,12 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+import dz.esi.pfe.pfe_app.BLL.Communication.C_Communication;
 import dz.esi.pfe.pfe_app.FollowUp;
 import dz.esi.pfe.pfe_app.History;
 import dz.esi.pfe.pfe_app.Monitoring;
 import dz.esi.pfe.pfe_app.R;
+import dz.esi.pfe.pfe_app.SettingsActivity;
 import dz.esi.pfe.pfe_app.UI.C_Affichage;
 
 public class DashboardActivity extends AppCompatActivity {
@@ -99,5 +106,47 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     public void launch_help(View view) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent intent=new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        else if(id==R.id.action_sub){
+            SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor edit=sharedPreferences.edit();
+
+            if(item.getTitle().equals("Unsubscribe")){
+                Log.d("which","rah nsiyi nunsubscribi");
+                new C_Communication().startActionUnSub(this);
+                edit.putBoolean("acq",false);
+                edit.commit();
+                item.setTitle("Subscribe");
+            }
+            else if(item.getTitle().equals("Subscribe")){
+                Log.d("which","rah nsiyi nsubscribi");
+                new C_Communication().startActionSub(this);
+                edit.putBoolean("acq",true);
+                edit.commit();
+                item.setTitle("Unsubscribe");
+            }
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

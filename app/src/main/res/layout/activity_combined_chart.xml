@@ -4,20 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="dz.esi.pfe.pfe_app.PieChartView">
+    tools:context="dz.esi.pfe.pfe_app.LineChartView">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Titre"
-        android:id="@+id/pietitle"
+        android:id="@+id/title"
         android:gravity="center_horizontal"
         android:textAlignment="center"
         android:textSize="16sp"
         android:layout_marginTop="10dp"/>
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/piecourbe"
+    <com.github.mikephil.charting.charts.CombinedChart
+        android:id="@+id/courbe"
         android:layout_width="match_parent"
         android:layout_margin="15dp"
         android:layout_height="350dp" />
@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Commentaires"
-        android:id="@+id/piecomm"
+        android:id="@+id/comm"
         android:gravity="center_horizontal"
         android:textAlignment="center"
         android:layout_margin="10dp"/>
@@ -40,14 +40,15 @@
             android:layout_width="120dp"
             android:id="@+id/refresh"
             android:layout_height="50dp"
-            android:text="Actualiser"/>
+            android:text="Actualiser"
+            android:onClick="refresh"/>
 
         <Button
             android:layout_width="120dp"
             android:id="@+id/export"
-            android:onClick="export"
             android:layout_height="50dp"
-            android:text="Exporter"/>
+            android:text="Exporter"
+            android:onClick="export"/>
     </LinearLayout>
 
 </LinearLayout>

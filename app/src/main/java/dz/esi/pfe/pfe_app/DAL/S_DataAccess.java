@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -179,7 +180,11 @@ public class S_DataAccess extends IntentService {
             Log.d("datasize","number of measures "+data.size());
         }
         else if(table.equals("windowactivity")) {
-            ArrayList<WindowActivity> data = db.getAllWindowActivities();
+            try {
+                ArrayList<WindowActivity> data = db.getAllWindowActivities();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         else if(table.equals("rpeaks")) {
             ArrayList<RPeaks> data = db.getAllRPeaks();

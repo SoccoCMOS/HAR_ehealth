@@ -2,7 +2,9 @@ package dz.esi.pfe.pfe_app.BLL.DataProcessing.Controllers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import dz.esi.pfe.pfe_app.BLL.DataProcessing.Structures.WindowData;
 import dz.esi.pfe.pfe_app.BLL.DataProcessing.Utilities.U_Matrix;
 import dz.esi.pfe.pfe_app.DAL.Model.Activity;
 import dz.esi.pfe.pfe_app.DAL.Model.WindowActivity;
@@ -95,7 +98,9 @@ public class ActivityRecognition {
                                                 activity = new Activity(classes[0]);
                                                 Log.d("activity",activity.getActivityLabel());
 
-                                                WindowActivity windowActivity=new WindowActivity(wid,begin,finish,activity.getCodeActivity(),"socco");
+                                                WindowData.lastact=activity.getActivityLabel();
+
+                                                WindowActivity windowActivity=new WindowActivity(wid+102,begin,finish,activity.getCodeActivity(),"socco");
 
                                                 // Lancer une tâche d'écriture de l'activité en base de donnée
                                                 S_DataAccess.startActionInsert(context, "windowactivity",
@@ -151,6 +156,7 @@ public class ActivityRecognition {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         activity =new Activity(0);
+                        Log.d("errorvoley","firsquery");
                     }
                 })
                 {
