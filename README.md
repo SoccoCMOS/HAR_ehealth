@@ -5,7 +5,7 @@ The java source code is organized as follow:
 
 - A BLL (Business Logic Layer) package that contains the following processing Intent Services:
    - Communication service: it handles acquisition of data from an external MQTT Broker (using Paho Client Services)
-   - Processing Service: it handles humain activity recognition processings as well as the remote API calls.
+   - Processing Service: it handles humain activity recognition processings as well as the remote API calls. The code is set to interact with services that have been deployed on Django Rest Framework. These are available in the following repository: https://github.com/SoccoCMOS/HAR_EHEALTH_Backend.
    - Decision Support Service: it handles the application of decision rules to ecg data and activity recognition results.
 
 - A DAL (Data Access Layer) pacage that contains Model classes as well as DatabaseHelper classes, synchronization code and an Intent Service
